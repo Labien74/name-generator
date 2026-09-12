@@ -1,0 +1,15 @@
+branch=$(git rev-parse --abbrev-ref HEAD)
+if [ "$branch" = "main" ]; then
+  echo ""
+  echo "BLOCKED: direct commits to 'main' are not allowed."
+  echo "Create a feature branch first: git checkout -b feature/<name>"
+  echo "Merge back to main only once its checks are green."
+  echo ""
+  exit 1
+fi
+
+echo "Running pre-commit checks on branch '$branch': lint, typecheck, tests..."
+
+npm run lint || exit 1
+npx tsc --noEmit || exit 1
+npm test || exit 1
