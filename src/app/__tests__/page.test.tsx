@@ -65,13 +65,13 @@ describe("Home (name generator screen)", () => {
     }
   });
 
-  it("shows region and century selects only when 'Историческое' is chosen", () => {
+  it("shows region and century selects only when 'Реалистичное' is chosen", () => {
     render(<Home />);
 
     expect(screen.queryByLabelText("Регион")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("Век")).not.toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText("Сеттинг"), { target: { value: "historical" } });
+    fireEvent.change(screen.getByLabelText("Сеттинг"), { target: { value: "realistic" } });
 
     expect(screen.getByLabelText("Регион")).toBeInTheDocument();
     expect(screen.getByLabelText("Век")).toBeInTheDocument();
@@ -82,10 +82,10 @@ describe("Home (name generator screen)", () => {
     expect(screen.queryByLabelText("Век")).not.toBeInTheDocument();
   });
 
-  it("restricts generated names to the chosen historical region", () => {
+  it("restricts generated names to the chosen realistic region", () => {
     render(<Home />);
 
-    fireEvent.change(screen.getByLabelText("Сеттинг"), { target: { value: "historical" } });
+    fireEvent.change(screen.getByLabelText("Сеттинг"), { target: { value: "realistic" } });
     fireEvent.change(screen.getByLabelText("Регион"), { target: { value: "usa" } });
     fireEvent.change(screen.getByLabelText("Пол"), { target: { value: "male" } });
     fireEvent.click(screen.getByRole("button", { name: "Сгенерировать" }));

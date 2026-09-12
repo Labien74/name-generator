@@ -1,12 +1,12 @@
 import { fantasyDataset } from "./datasets/fantasy";
 import { fantasyRealNames } from "./datasets/fantasyRealNames";
 import { scifiDataset } from "./datasets/scifi";
-import { historicalDataset, historicalPeriodMeta } from "./datasets/historical";
+import { realisticDataset, realisticPeriodMeta } from "./datasets/realistic";
 import type {
   Gender,
-  HistoricalCentury,
-  HistoricalPeriod,
-  HistoricalRegion,
+  RealisticCentury,
+  RealisticPeriod,
+  RealisticRegion,
   Setting,
   SyllableDataset,
 } from "./types";
@@ -16,7 +16,7 @@ const syllableDatasets: Partial<Record<Setting, SyllableDataset>> = {
   scifi: scifiDataset,
 };
 
-const allHistoricalPeriods = Object.keys(historicalDataset) as HistoricalPeriod[];
+const allRealisticPeriods = Object.keys(realisticDataset) as RealisticPeriod[];
 
 // Chance that a fantasy name is pulled from the curated real-name pool
 // instead of built from the invented syllable pool, for extra variety.
@@ -26,8 +26,8 @@ export interface GenerateNamesOptions {
   setting: Setting;
   gender: Gender;
   count: number;
-  region?: HistoricalRegion;
-  century?: HistoricalCentury;
+  region?: RealisticRegion;
+  century?: RealisticCentury;
 }
 
 function pickRandom<T>(items: T[]): T {
@@ -39,42 +39,42 @@ function buildSyllableName(dataset: SyllableDataset, gender: Gender): string {
   return `${pickRandom(prefixes)}${pickRandom(suffixes)}`;
 }
 
-function resolveHistoricalPeriods(
-  region: HistoricalRegion | undefined,
-  century: HistoricalCentury | undefined
-): HistoricalPeriod[] {
+function resolveRealisticPeriods(
+  region: RealisticRegion | undefined,
+  century: RealisticCentury | undefined
+): RealisticPeriod[] {
   if (!region && !century) {
-    return allHistoricalPeriods;
+    return allRealisticPeriods;
   }
 
-  const matching = allHistoricalPeriods.filter((period) => {
-    const meta = historicalPeriodMeta[period];
+  const matching = allRealisticPeriods.filter((period) => {
+    const meta = realisticPeriodMeta[period];
     return (!region || meta.region === region) && (!century || meta.century === century);
   });
 
   // No period matches this region+century combination (e.g. sparse data) —
   // fall back to the full mix rather than returning nothing.
-  return matching.length > 0 ? matching : allHistoricalPeriods;
+  return matching.length > 0 ? matching : allRealisticPeriods;
 }
 
-function buildHistoricalName(
+function buildRealisticName(
   gender: Gender,
-  region: HistoricalRegion | undefined,
-  century: HistoricalCentury | undefined
+  region: RealisticRegion | undefined,
+  century: RealisticCentury | undefined
 ): string {
-  const periods = resolveHistoricalPeriods(region, century);
+  const periods = resolveRealisticPeriods(region, century);
   const period = pickRandom(periods);
-  return pickRandom(historicalDataset[period][gender]);
+  return pickRandom(realisticDataset[period][gender]);
 }
 
 function buildName(
   setting: Setting,
   gender: Gender,
-  region: HistoricalRegion | undefined,
-  century: HistoricalCentury | undefined
+  region: RealisticRegion | undefined,
+  century: RealisticCentury | undefined
 ): string {
-  if (setting === "historical") {
-    return buildHistoricalName(gender, region, century);
+  if (setting === "realistic") {
+    return buildRealisticName(gender, region, century);
   }
   if (setting === "fantasy" && Math.random() < FANTASY_REAL_NAME_CHANCE) {
     return pickRandom(fantasyRealNames[gender]);

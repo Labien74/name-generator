@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { generateNames } from "@/lib/names/generateNames";
-import type { Gender, HistoricalCentury, HistoricalRegion, Setting } from "@/lib/names/types";
+import type { Gender, RealisticCentury, RealisticRegion, Setting } from "@/lib/names/types";
 
 const SETTINGS: { value: Setting; label: string }[] = [
   { value: "fantasy", label: "Фэнтези" },
   { value: "scifi", label: "Sci-Fi / космоопера / киберпанк" },
-  { value: "historical", label: "Историческое" },
+  { value: "realistic", label: "Реалистичное" },
 ];
 
 const GENDERS: { value: Gender; label: string }[] = [
@@ -16,7 +16,7 @@ const GENDERS: { value: Gender; label: string }[] = [
   { value: "neutral", label: "Нейтральное" },
 ];
 
-const REGIONS: { value: HistoricalRegion | ""; label: string }[] = [
+const REGIONS: { value: RealisticRegion | ""; label: string }[] = [
   { value: "", label: "Любой" },
   { value: "western_europe", label: "Западная Европа" },
   { value: "eastern_europe", label: "Восточная Европа" },
@@ -24,7 +24,7 @@ const REGIONS: { value: HistoricalRegion | ""; label: string }[] = [
   { value: "latin_america", label: "Латинская Америка" },
 ];
 
-const CENTURIES: { value: HistoricalCentury | ""; label: string }[] = [
+const CENTURIES: { value: RealisticCentury | ""; label: string }[] = [
   { value: "", label: "Любой" },
   { value: "1200_1600", label: "1200–1600" },
   { value: "20th_century", label: "XX век" },
@@ -34,8 +34,8 @@ export default function Home() {
   const [setting, setSetting] = useState<Setting>("fantasy");
   const [gender, setGender] = useState<Gender>("male");
   const [count, setCount] = useState(5);
-  const [region, setRegion] = useState<HistoricalRegion | "">("");
-  const [century, setCentury] = useState<HistoricalCentury | "">("");
+  const [region, setRegion] = useState<RealisticRegion | "">("");
+  const [century, setCentury] = useState<RealisticCentury | "">("");
   const [names, setNames] = useState<string[]>([]);
 
   function handleGenerate() {
@@ -73,7 +73,7 @@ export default function Home() {
             </select>
           </label>
 
-          {setting === "historical" && (
+          {setting === "realistic" && (
             <>
               <label className="flex flex-col gap-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
                 Регион
@@ -81,7 +81,7 @@ export default function Home() {
                   className="rounded-md border border-black/[.08] bg-white px-3 py-2 text-black dark:border-white/[.145] dark:bg-black dark:text-zinc-50"
                   value={region}
                   onChange={(event) =>
-                    setRegion(event.target.value as HistoricalRegion | "")
+                    setRegion(event.target.value as RealisticRegion | "")
                   }
                 >
                   {REGIONS.map((option) => (
@@ -98,7 +98,7 @@ export default function Home() {
                   className="rounded-md border border-black/[.08] bg-white px-3 py-2 text-black dark:border-white/[.145] dark:bg-black dark:text-zinc-50"
                   value={century}
                   onChange={(event) =>
-                    setCentury(event.target.value as HistoricalCentury | "")
+                    setCentury(event.target.value as RealisticCentury | "")
                   }
                 >
                   {CENTURIES.map((option) => (
