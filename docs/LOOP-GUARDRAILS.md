@@ -11,6 +11,8 @@
 
 Naming веток: `feat/<название>` для новой функциональности, `chore/<название>` для инфраструктуры/конфигурации, `fix/<название>` для багфиксов.
 
+**Обновление**: репозиторий публичный ([github.com/Labien74/name-generator](https://github.com/Labien74/name-generator)), на `main` настроен GitHub Ruleset — слияние теперь возможно **только через Pull Request** с обязательным зелёным CI-чеком. Прямой `git push` в `main` физически отклоняется GitHub (`GH013: Repository rule violations`), причём правило действует даже для владельца репозитория (`current_user_can_bypass: never`). Локальный merge + push, которым мы пользовались раньше, больше не работает — см. обновлённый флоу внизу файла.
+
 ## Hardening — мягкие правила переведены в жёсткие через хуки
 
 Раньше «не коммить сломанный код» было договорённостью (soft rule) — то, что я обещал делать сам перед каждым коммитом.
@@ -28,8 +30,13 @@ Naming веток: `feat/<название>` для новой функцион�
 git checkout -b feat/новая-фича
 # ... red -> green -> refactor ...
 git add .
-git commit -m "..."   # хук сам проверит lint/typecheck/тесты
+git commit -m "..."           # локальный хук сам проверит lint/typecheck/тесты
+git push -u origin feat/новая-фича
+gh pr create --fill           # открыть Pull Request
+gh pr checks --watch          # дождаться зелёного CI на GitHub
+gh pr merge --squash --delete-branch   # слияние возможно только когда CI зелёный
 git checkout main
-git merge feat/новая-фича   # fast-forward, если main не уходил вперёд
-git branch -d feat/новая-фича
+git pull
 ```
+
+`git merge` + `git push` напрямую в `main` теперь не сработает — GitHub Ruleset требует Pull Request с прошедшим статус-чеком `checks`.
