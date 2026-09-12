@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -File \".claude/hooks/loop-budget-guard.ps1\"",
+            "shell": "powershell",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}
