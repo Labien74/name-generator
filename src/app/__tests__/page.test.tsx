@@ -6,38 +6,38 @@ describe("Home (name generator screen)", () => {
   it("renders all controls with no results yet", () => {
     render(<Home />);
 
-    expect(screen.getByText("Сеттинг")).toBeInTheDocument();
-    expect(screen.getByText("Пол")).toBeInTheDocument();
-    expect(screen.getByText("Количество вариантов")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Сгенерировать" })).toBeInTheDocument();
+    expect(screen.getByText("Setting")).toBeInTheDocument();
+    expect(screen.getByText("Gender")).toBeInTheDocument();
+    expect(screen.getByText("Count")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Generate" })).toBeInTheDocument();
     expect(screen.queryByRole("list")).not.toBeInTheDocument();
   });
 
-  it("generates exactly the requested count of names and switches the button to 'Ещё'", () => {
+  it("generates exactly the requested count of names and switches the button to 'More'", () => {
     render(<Home />);
 
-    const countInput = screen.getByLabelText("Количество вариантов");
+    const countInput = screen.getByLabelText("Count");
     fireEvent.change(countInput, { target: { value: "7" } });
 
-    fireEvent.click(screen.getByRole("button", { name: "Сгенерировать" }));
+    fireEvent.click(screen.getByRole("button", { name: "Generate" }));
 
     const list = screen.getByRole("list");
     expect(within(list).getAllByRole("listitem")).toHaveLength(7);
-    expect(screen.getByRole("button", { name: "Ещё" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "More" })).toBeInTheDocument();
   });
 
-  it("regenerates a new batch when clicking 'Ещё' again, keeping the chosen filters", () => {
+  it("regenerates a new batch when clicking 'More' again, keeping the chosen filters", () => {
     render(<Home />);
 
-    const settingSelect = screen.getByLabelText("Сеттинг") as HTMLSelectElement;
+    const settingSelect = screen.getByLabelText("Setting") as HTMLSelectElement;
     fireEvent.change(settingSelect, { target: { value: "scifi" } });
 
-    fireEvent.click(screen.getByRole("button", { name: "Сгенерировать" }));
+    fireEvent.click(screen.getByRole("button", { name: "Generate" }));
     const firstBatch = within(screen.getByRole("list"))
       .getAllByRole("listitem")
       .map((item) => item.textContent);
 
-    fireEvent.click(screen.getByRole("button", { name: "Ещё" }));
+    fireEvent.click(screen.getByRole("button", { name: "More" }));
     const secondBatch = within(screen.getByRole("list"))
       .getAllByRole("listitem")
       .map((item) => item.textContent);
@@ -49,9 +49,9 @@ describe("Home (name generator screen)", () => {
   it("respects the gender filter end-to-end through the UI", () => {
     render(<Home />);
 
-    fireEvent.change(screen.getByLabelText("Сеттинг"), { target: { value: "fantasy" } });
-    fireEvent.change(screen.getByLabelText("Пол"), { target: { value: "female" } });
-    fireEvent.click(screen.getByRole("button", { name: "Сгенерировать" }));
+    fireEvent.change(screen.getByLabelText("Setting"), { target: { value: "fantasy" } });
+    fireEvent.change(screen.getByLabelText("Gender"), { target: { value: "female" } });
+    fireEvent.click(screen.getByRole("button", { name: "Generate" }));
 
     const names = within(screen.getByRole("list"))
       .getAllByRole("listitem")
@@ -65,31 +65,31 @@ describe("Home (name generator screen)", () => {
     }
   });
 
-  it("shows region and century selects only when 'Реалистичное' is chosen", () => {
+  it("shows region and century selects only when 'Realistic' is chosen", () => {
     render(<Home />);
 
-    expect(screen.queryByLabelText("Регион")).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Век")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Region")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Century")).not.toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText("Сеттинг"), { target: { value: "realistic" } });
+    fireEvent.change(screen.getByLabelText("Setting"), { target: { value: "realistic" } });
 
-    expect(screen.getByLabelText("Регион")).toBeInTheDocument();
-    expect(screen.getByLabelText("Век")).toBeInTheDocument();
+    expect(screen.getByLabelText("Region")).toBeInTheDocument();
+    expect(screen.getByLabelText("Century")).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText("Сеттинг"), { target: { value: "fantasy" } });
+    fireEvent.change(screen.getByLabelText("Setting"), { target: { value: "fantasy" } });
 
-    expect(screen.queryByLabelText("Регион")).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("Век")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Region")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Century")).not.toBeInTheDocument();
   });
 
   it("restricts generated names to the chosen realistic region", () => {
     render(<Home />);
 
-    fireEvent.change(screen.getByLabelText("Сеттинг"), { target: { value: "realistic" } });
-    fireEvent.change(screen.getByLabelText("Регион"), { target: { value: "usa" } });
-    fireEvent.change(screen.getByLabelText("Век"), { target: { value: "20th_century" } });
-    fireEvent.change(screen.getByLabelText("Пол"), { target: { value: "male" } });
-    fireEvent.click(screen.getByRole("button", { name: "Сгенерировать" }));
+    fireEvent.change(screen.getByLabelText("Setting"), { target: { value: "realistic" } });
+    fireEvent.change(screen.getByLabelText("Region"), { target: { value: "usa" } });
+    fireEvent.change(screen.getByLabelText("Century"), { target: { value: "20th_century" } });
+    fireEvent.change(screen.getByLabelText("Gender"), { target: { value: "male" } });
+    fireEvent.click(screen.getByRole("button", { name: "Generate" }));
 
     const names = within(screen.getByRole("list"))
       .getAllByRole("listitem")
