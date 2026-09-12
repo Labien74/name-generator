@@ -1,6 +1,19 @@
 import { describe, it, expect, vi } from "vitest";
 import { generateNames } from "../generateNames";
 import { realisticDataset, realisticPeriodMeta } from "../datasets/realistic";
+import { realisticSurnames } from "../datasets/realisticSurnames";
+
+// Surnames can themselves contain spaces (e.g. "De Los Santos"), so split
+// only on the first space to separate the first name from the surname.
+function firstNameOf(fullName: string): string {
+  const spaceIndex = fullName.indexOf(" ");
+  return spaceIndex === -1 ? fullName : fullName.slice(0, spaceIndex);
+}
+
+function surnameOf(fullName: string): string {
+  const spaceIndex = fullName.indexOf(" ");
+  return spaceIndex === -1 ? "" : fullName.slice(spaceIndex + 1);
+}
 
 const EXPECTED_PERIODS = [
   "western_europe_1200_1600",
@@ -59,7 +72,7 @@ describe("generateNames (realistic)", () => {
     const names = generateNames({ setting: "realistic", gender, count: 10 });
 
     for (const name of names) {
-      expect(validNames.has(name)).toBe(true);
+      expect(validNames.has(firstNameOf(name))).toBe(true);
     }
   });
 
@@ -98,7 +111,7 @@ describe("generateNames (realistic)", () => {
 
     expect(names).toHaveLength(5);
     for (const name of names) {
-      expect(validNames.has(name)).toBe(true);
+      expect(validNames.has(firstNameOf(name))).toBe(true);
     }
   });
 
@@ -119,7 +132,7 @@ describe("generateNames (realistic)", () => {
 
     expect(names).toHaveLength(5);
     for (const name of names) {
-      expect(validNames.has(name)).toBe(true);
+      expect(validNames.has(firstNameOf(name))).toBe(true);
     }
   });
 
@@ -137,7 +150,7 @@ describe("generateNames (realistic)", () => {
 
     expect(names).toHaveLength(5);
     for (const name of names) {
-      expect(validNames.has(name)).toBe(true);
+      expect(validNames.has(firstNameOf(name))).toBe(true);
     }
   });
 
@@ -176,7 +189,7 @@ describe("generateNames (realistic)", () => {
 
     expect(names).toHaveLength(5);
     for (const name of names) {
-      expect(validNames.has(name)).toBe(true);
+      expect(validNames.has(firstNameOf(name))).toBe(true);
     }
   });
 
@@ -193,7 +206,7 @@ describe("generateNames (realistic)", () => {
 
     expect(names).toHaveLength(5);
     for (const name of names) {
-      expect(validNames.has(name)).toBe(true);
+      expect(validNames.has(firstNameOf(name))).toBe(true);
     }
   });
 
@@ -214,7 +227,34 @@ describe("generateNames (realistic)", () => {
 
     expect(names).toHaveLength(10);
     for (const name of names) {
-      expect(validNames.has(name)).toBe(true);
+      expect(validNames.has(firstNameOf(name))).toBe(true);
+    }
+  });
+
+  it("always includes a surname alongside the first name", () => {
+    const names = generateNames({ setting: "realistic", gender: "male", count: 10 });
+
+    for (const name of names) {
+      expect(name.includes(" ")).toBe(true);
+      expect(surnameOf(name).length).toBeGreaterThan(0);
+    }
+  });
+
+  it("pairs a first name and surname from the same region", () => {
+    const gender = "male";
+    const validFirstNames = new Set(realisticDataset.japan_21st_century[gender]);
+    const validSurnames = new Set(realisticSurnames.japan);
+
+    const names = generateNames({
+      setting: "realistic",
+      gender,
+      count: 10,
+      region: "japan",
+    });
+
+    for (const name of names) {
+      expect(validFirstNames.has(firstNameOf(name))).toBe(true);
+      expect(validSurnames.has(surnameOf(name))).toBe(true);
     }
   });
 });

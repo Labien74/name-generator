@@ -106,7 +106,9 @@ describe("Home (name generator screen)", () => {
       "Elmer",
     ];
     for (const name of names) {
-      expect(usaMaleNames).toContain(name);
+      const firstName = name?.split(" ")[0];
+      expect(usaMaleNames).toContain(firstName);
+      expect(name?.includes(" ")).toBe(true);
     }
   });
 });

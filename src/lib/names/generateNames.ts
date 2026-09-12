@@ -2,6 +2,7 @@ import { fantasyDataset } from "./datasets/fantasy";
 import { fantasyRealNames } from "./datasets/fantasyRealNames";
 import { scifiDataset } from "./datasets/scifi";
 import { realisticDataset, realisticPeriodMeta } from "./datasets/realistic";
+import { realisticSurnames } from "./datasets/realisticSurnames";
 import type {
   Gender,
   RealisticCentury,
@@ -64,7 +65,14 @@ function buildRealisticName(
 ): string {
   const periods = resolveRealisticPeriods(region, century);
   const period = pickRandom(periods);
-  return pickRandom(realisticDataset[period][gender]);
+  const firstName = pickRandom(realisticDataset[period][gender]);
+
+  // Surnames aren't split by century, so pair with the first name's own
+  // region (not the requested filter) — always consistent even when the
+  // region filter is "any" and periods span multiple regions.
+  const surname = pickRandom(realisticSurnames[realisticPeriodMeta[period].region]);
+
+  return `${firstName} ${surname}`;
 }
 
 function buildName(
