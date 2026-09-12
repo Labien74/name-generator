@@ -1,8 +1,10 @@
 import { fantasyDataset } from "./datasets/fantasy";
-import type { Gender, Setting, SettingDataset } from "./types";
+import { scifiDataset } from "./datasets/scifi";
+import type { Gender, Setting, SyllableDataset } from "./types";
 
-const datasets: Record<Setting, SettingDataset> = {
+const syllableDatasets: Record<Setting, SyllableDataset> = {
   fantasy: fantasyDataset,
+  scifi: scifiDataset,
 };
 
 export interface GenerateNamesOptions {
@@ -15,18 +17,18 @@ function pickRandom<T>(items: T[]): T {
   return items[Math.floor(Math.random() * items.length)];
 }
 
-function buildName(prefixes: string[], suffixes: string[]): string {
+function buildSyllableName(prefixes: string[], suffixes: string[]): string {
   return `${pickRandom(prefixes)}${pickRandom(suffixes)}`;
 }
 
 export function generateNames({ setting, gender, count }: GenerateNamesOptions): string[] {
-  const { prefixes, suffixes } = datasets[setting][gender];
+  const { prefixes, suffixes } = syllableDatasets[setting][gender];
   const names = new Set<string>();
   const maxAttempts = count * 50;
 
   let attempts = 0;
   while (names.size < count && attempts < maxAttempts) {
-    names.add(buildName(prefixes, suffixes));
+    names.add(buildSyllableName(prefixes, suffixes));
     attempts++;
   }
 

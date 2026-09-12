@@ -1,6 +1,6 @@
-import type { SettingDataset } from "../types";
+import type { SyllableDataset } from "../types";
 
-export const fantasyDataset: SettingDataset = {
+export const fantasyDataset: SyllableDataset = {
   male: {
     prefixes: ["Ar", "Bal", "Cor", "Dor", "Fen", "Gor", "Hal", "Ivor"],
     suffixes: ["dun", "rik", "wyn", "thas", "mir", "dor", "ian", "gard"],
