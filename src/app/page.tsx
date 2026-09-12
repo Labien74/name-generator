@@ -5,34 +5,34 @@ import { generateNames } from "@/lib/names/generateNames";
 import type { Gender, RealisticCentury, RealisticRegion, Setting } from "@/lib/names/types";
 
 const SETTINGS: { value: Setting; label: string }[] = [
-  { value: "fantasy", label: "Фэнтези" },
-  { value: "scifi", label: "Sci-Fi / космоопера / киберпанк" },
-  { value: "realistic", label: "Реалистичное" },
+  { value: "fantasy", label: "Fantasy" },
+  { value: "scifi", label: "Sci-Fi / Space Opera / Cyberpunk" },
+  { value: "realistic", label: "Realistic" },
 ];
 
 const GENDERS: { value: Gender; label: string }[] = [
-  { value: "male", label: "Мужское" },
-  { value: "female", label: "Женское" },
-  { value: "neutral", label: "Нейтральное" },
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
+  { value: "neutral", label: "Neutral" },
 ];
 
 const REGIONS: { value: RealisticRegion | ""; label: string }[] = [
-  { value: "", label: "Любой" },
-  { value: "western_europe", label: "Западная Европа" },
-  { value: "eastern_europe", label: "Восточная Европа" },
-  { value: "usa", label: "США" },
-  { value: "latin_america", label: "Латинская Америка" },
-  { value: "central_asia", label: "Средняя Азия" },
-  { value: "india", label: "Индия" },
-  { value: "japan", label: "Япония" },
-  { value: "china", label: "Китай" },
+  { value: "", label: "Any" },
+  { value: "western_europe", label: "Western Europe" },
+  { value: "eastern_europe", label: "Eastern Europe" },
+  { value: "usa", label: "USA" },
+  { value: "latin_america", label: "Latin America" },
+  { value: "central_asia", label: "Central Asia" },
+  { value: "india", label: "India" },
+  { value: "japan", label: "Japan" },
+  { value: "china", label: "China" },
 ];
 
 const CENTURIES: { value: RealisticCentury | ""; label: string }[] = [
-  { value: "", label: "Любой" },
+  { value: "", label: "Any" },
   { value: "1200_1600", label: "1200–1600" },
-  { value: "20th_century", label: "XX век" },
-  { value: "21st_century", label: "XXI век" },
+  { value: "20th_century", label: "20th century" },
+  { value: "21st_century", label: "21st century" },
 ];
 
 export default function Home() {
@@ -59,12 +59,12 @@ export default function Home() {
     <div className="flex min-h-screen flex-col items-center bg-zinc-50 px-6 py-16 font-sans dark:bg-black">
       <main className="flex w-full max-w-xl flex-col gap-8">
         <h1 className="text-2xl font-semibold text-black dark:text-zinc-50">
-          Генератор имён под сеттинг
+          Name Generator by Setting
         </h1>
 
         <div className="flex flex-col gap-4 rounded-xl border border-black/[.08] bg-white p-6 dark:border-white/[.145] dark:bg-zinc-950">
           <label className="flex flex-col gap-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Сеттинг
+            Setting
             <select
               className="rounded-md border border-black/[.08] bg-white px-3 py-2 text-black dark:border-white/[.145] dark:bg-black dark:text-zinc-50"
               value={setting}
@@ -81,7 +81,7 @@ export default function Home() {
           {setting === "realistic" && (
             <>
               <label className="flex flex-col gap-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                Регион
+                Region
                 <select
                   className="rounded-md border border-black/[.08] bg-white px-3 py-2 text-black dark:border-white/[.145] dark:bg-black dark:text-zinc-50"
                   value={region}
@@ -98,7 +98,7 @@ export default function Home() {
               </label>
 
               <label className="flex flex-col gap-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                Век
+                Century
                 <select
                   className="rounded-md border border-black/[.08] bg-white px-3 py-2 text-black dark:border-white/[.145] dark:bg-black dark:text-zinc-50"
                   value={century}
@@ -117,7 +117,7 @@ export default function Home() {
           )}
 
           <label className="flex flex-col gap-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Пол
+            Gender
             <select
               className="rounded-md border border-black/[.08] bg-white px-3 py-2 text-black dark:border-white/[.145] dark:bg-black dark:text-zinc-50"
               value={gender}
@@ -132,7 +132,7 @@ export default function Home() {
           </label>
 
           <label className="flex flex-col gap-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Количество вариантов
+            Count
             <input
               className="rounded-md border border-black/[.08] bg-white px-3 py-2 text-black dark:border-white/[.145] dark:bg-black dark:text-zinc-50"
               type="number"
@@ -149,7 +149,7 @@ export default function Home() {
             className="mt-2 rounded-full bg-foreground px-5 py-3 font-medium text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc]"
             onClick={handleGenerate}
           >
-            {names.length === 0 ? "Сгенерировать" : "Ещё"}
+            {names.length === 0 ? "Generate" : "More"}
           </button>
         </div>
 
