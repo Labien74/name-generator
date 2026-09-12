@@ -5,12 +5,14 @@ import { historicalDataset, historicalPeriodMeta } from "../datasets/historical"
 const EXPECTED_PERIODS = [
   "western_europe_1200_1600",
   "eastern_europe_1200_1600",
+  "western_europe_20th_century",
+  "eastern_europe_20th_century",
   "usa_20th_century",
-  "europe_20th_century",
+  "latin_america_20th_century",
 ].sort();
 
 describe("historicalDataset", () => {
-  it("covers all 4 sub-periods/regions with names for every gender", () => {
+  it("covers all 6 sub-periods/regions with names for every gender", () => {
     const periods = Object.keys(historicalDataset).sort();
     expect(periods).toEqual(EXPECTED_PERIODS);
 
@@ -137,8 +139,8 @@ describe("generateNames (historical)", () => {
         setting: "historical",
         gender: "male",
         count: 5,
-        region: "western_europe",
-        century: "20th_century",
+        region: "usa",
+        century: "1200_1600",
       })
     ).not.toThrow();
 
@@ -146,9 +148,26 @@ describe("generateNames (historical)", () => {
       setting: "historical",
       gender: "male",
       count: 5,
-      region: "western_europe",
-      century: "20th_century",
+      region: "usa",
+      century: "1200_1600",
     });
     expect(names).toHaveLength(5);
+  });
+
+  it("restricts to Latin America's 20th-century period", () => {
+    const gender = "female";
+    const validNames = new Set(historicalDataset.latin_america_20th_century[gender]);
+
+    const names = generateNames({
+      setting: "historical",
+      gender,
+      count: 5,
+      region: "latin_america",
+    });
+
+    expect(names).toHaveLength(5);
+    for (const name of names) {
+      expect(validNames.has(name)).toBe(true);
+    }
   });
 });
