@@ -1,4 +1,5 @@
 import { fantasyDataset } from "./datasets/fantasy";
+import { fantasyRealNames } from "./datasets/fantasyRealNames";
 import { scifiDataset } from "./datasets/scifi";
 import { historicalDataset, historicalPeriodMeta } from "./datasets/historical";
 import type {
@@ -16,6 +17,10 @@ const syllableDatasets: Partial<Record<Setting, SyllableDataset>> = {
 };
 
 const allHistoricalPeriods = Object.keys(historicalDataset) as HistoricalPeriod[];
+
+// Chance that a fantasy name is pulled from the curated real-name pool
+// instead of built from the invented syllable pool, for extra variety.
+const FANTASY_REAL_NAME_CHANCE = 0.4;
 
 export interface GenerateNamesOptions {
   setting: Setting;
@@ -70,6 +75,9 @@ function buildName(
 ): string {
   if (setting === "historical") {
     return buildHistoricalName(gender, region, century);
+  }
+  if (setting === "fantasy" && Math.random() < FANTASY_REAL_NAME_CHANCE) {
+    return pickRandom(fantasyRealNames[gender]);
   }
   return buildSyllableName(syllableDatasets[setting]!, gender);
 }
