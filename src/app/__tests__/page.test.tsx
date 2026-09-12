@@ -64,4 +64,48 @@ describe("Home (name generator screen)", () => {
       expect(maleOnlyPrefixes.some((prefix) => name?.startsWith(prefix))).toBe(false);
     }
   });
+
+  it("shows region and century selects only when 'Историческое' is chosen", () => {
+    render(<Home />);
+
+    expect(screen.queryByLabelText("Регион")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Век")).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Сеттинг"), { target: { value: "historical" } });
+
+    expect(screen.getByLabelText("Регион")).toBeInTheDocument();
+    expect(screen.getByLabelText("Век")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Сеттинг"), { target: { value: "fantasy" } });
+
+    expect(screen.queryByLabelText("Регион")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Век")).not.toBeInTheDocument();
+  });
+
+  it("restricts generated names to the chosen historical region", () => {
+    render(<Home />);
+
+    fireEvent.change(screen.getByLabelText("Сеттинг"), { target: { value: "historical" } });
+    fireEvent.change(screen.getByLabelText("Регион"), { target: { value: "usa" } });
+    fireEvent.change(screen.getByLabelText("Пол"), { target: { value: "male" } });
+    fireEvent.click(screen.getByRole("button", { name: "Сгенерировать" }));
+
+    const names = within(screen.getByRole("list"))
+      .getAllByRole("listitem")
+      .map((item) => item.textContent);
+
+    const usaMaleNames = [
+      "Walter",
+      "Harold",
+      "Frank",
+      "Raymond",
+      "Eugene",
+      "Arthur",
+      "Clarence",
+      "Elmer",
+    ];
+    for (const name of names) {
+      expect(usaMaleNames).toContain(name);
+    }
+  });
 });

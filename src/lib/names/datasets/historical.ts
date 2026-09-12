@@ -1,4 +1,11 @@
-import type { HistoricalDataset } from "../types";
+import type { HistoricalDataset, HistoricalPeriod, HistoricalPeriodMeta } from "../types";
+
+export const historicalPeriodMeta: Record<HistoricalPeriod, HistoricalPeriodMeta> = {
+  western_europe_1200_1600: { region: "western_europe", century: "1200_1600" },
+  eastern_europe_1200_1600: { region: "eastern_europe", century: "1200_1600" },
+  usa_20th_century: { region: "usa", century: "20th_century" },
+  europe_20th_century: { region: "europe", century: "20th_century" },
+};
 
 export const historicalDataset: HistoricalDataset = {
   western_europe_1200_1600: {

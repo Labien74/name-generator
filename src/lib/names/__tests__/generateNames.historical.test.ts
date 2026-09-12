@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { generateNames } from "../generateNames";
-import { historicalDataset } from "../datasets/historical";
+import { historicalDataset, historicalPeriodMeta } from "../datasets/historical";
 
 const EXPECTED_PERIODS = [
   "western_europe_1200_1600",
@@ -69,5 +69,86 @@ describe("generateNames (historical)", () => {
     const start = Date.now();
     generateNames({ setting: "historical", gender: "male", count: 10 });
     expect(Date.now() - start).toBeLessThan(1000);
+  });
+
+  it("restricts to a single region's periods when a region is given", () => {
+    const gender = "male";
+    const validNames = new Set(
+      (Object.keys(historicalDataset) as (keyof typeof historicalDataset)[])
+        .filter((period) => historicalPeriodMeta[period].region === "western_europe")
+        .flatMap((period) => historicalDataset[period][gender])
+    );
+
+    const names = generateNames({
+      setting: "historical",
+      gender,
+      count: 5,
+      region: "western_europe",
+    });
+
+    expect(names).toHaveLength(5);
+    for (const name of names) {
+      expect(validNames.has(name)).toBe(true);
+    }
+  });
+
+  it("restricts to a single century's periods when a century is given", () => {
+    const gender = "female";
+    const validNames = new Set(
+      (Object.keys(historicalDataset) as (keyof typeof historicalDataset)[])
+        .filter((period) => historicalPeriodMeta[period].century === "20th_century")
+        .flatMap((period) => historicalDataset[period][gender])
+    );
+
+    const names = generateNames({
+      setting: "historical",
+      gender,
+      count: 5,
+      century: "20th_century",
+    });
+
+    expect(names).toHaveLength(5);
+    for (const name of names) {
+      expect(validNames.has(name)).toBe(true);
+    }
+  });
+
+  it("combines region and century to a single matching period", () => {
+    const gender = "male";
+    const validNames = new Set(historicalDataset.usa_20th_century[gender]);
+
+    const names = generateNames({
+      setting: "historical",
+      gender,
+      count: 5,
+      region: "usa",
+      century: "20th_century",
+    });
+
+    expect(names).toHaveLength(5);
+    for (const name of names) {
+      expect(validNames.has(name)).toBe(true);
+    }
+  });
+
+  it("falls back to the full mix when region+century match no period, instead of throwing", () => {
+    expect(() =>
+      generateNames({
+        setting: "historical",
+        gender: "male",
+        count: 5,
+        region: "western_europe",
+        century: "20th_century",
+      })
+    ).not.toThrow();
+
+    const names = generateNames({
+      setting: "historical",
+      gender: "male",
+      count: 5,
+      region: "western_europe",
+      century: "20th_century",
+    });
+    expect(names).toHaveLength(5);
   });
 });
