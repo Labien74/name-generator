@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# loop guardrail runtime state (not code, resets per branch)
+/.claude/loop-budget.json
