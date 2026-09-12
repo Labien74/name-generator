@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { generateNames } from "../generateNames";
 import { realisticDataset, realisticPeriodMeta } from "../datasets/realistic";
 import { realisticSurnames } from "../datasets/realisticSurnames";
+import { realisticTitles, realisticEpithets } from "../datasets/realisticTitlesAndEpithets";
 
 // Surnames can themselves contain spaces (e.g. "De Los Santos"), so split
 // only on the first space to separate the first name from the surname.
@@ -255,6 +256,41 @@ describe("generateNames (realistic)", () => {
     for (const name of names) {
       expect(validFirstNames.has(firstNameOf(name))).toBe(true);
       expect(validSurnames.has(surnameOf(name))).toBe(true);
+    }
+  });
+
+  it("omits title and nickname by default", () => {
+    const names = generateNames({ setting: "realistic", gender: "male", count: 10 });
+
+    for (const name of names) {
+      expect(realisticTitles.some((title) => name.startsWith(`${title} `))).toBe(false);
+      expect(realisticEpithets.some((epithet) => name.endsWith(` ${epithet}`))).toBe(false);
+    }
+  });
+
+  it("prepends a title when includeTitle is true", () => {
+    const names = generateNames({
+      setting: "realistic",
+      gender: "male",
+      count: 10,
+      includeTitle: true,
+    });
+
+    for (const name of names) {
+      expect(realisticTitles.some((title) => name.startsWith(`${title} `))).toBe(true);
+    }
+  });
+
+  it("appends an epithet when includeNickname is true", () => {
+    const names = generateNames({
+      setting: "realistic",
+      gender: "male",
+      count: 10,
+      includeNickname: true,
+    });
+
+    for (const name of names) {
+      expect(realisticEpithets.some((epithet) => name.endsWith(` ${epithet}`))).toBe(true);
     }
   });
 });

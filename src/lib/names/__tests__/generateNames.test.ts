@@ -3,6 +3,7 @@ import { generateNames } from "../generateNames";
 import { fantasyDataset } from "../datasets/fantasy";
 import { fantasyRealNames } from "../datasets/fantasyRealNames";
 import { fantasySurnames } from "../datasets/fantasySurnames";
+import { fantasyTitles, fantasyEpithets } from "../datasets/fantasyTitlesAndEpithets";
 
 function firstNameOf(fullName: string): string {
   return fullName.slice(0, fullName.indexOf(" "));
@@ -81,5 +82,69 @@ describe("generateNames (fantasy)", () => {
     const start = Date.now();
     generateNames({ setting: "fantasy", gender: "male", count: 10 });
     expect(Date.now() - start).toBeLessThan(1000);
+  });
+
+  it("omits title and nickname by default", () => {
+    // Surnames can themselves be multi-word (e.g. "Van Tahl"), so this
+    // can't just check the token count — it checks for the specific
+    // title/epithet markers instead.
+    const allTitles = [...fantasyTitles.male, ...fantasyTitles.female, ...fantasyTitles.neutral];
+    const names = generateNames({ setting: "fantasy", gender: "male", count: 10 });
+
+    for (const name of names) {
+      expect(allTitles.some((title) => name.startsWith(`${title} `))).toBe(false);
+      expect(fantasyEpithets.some((epithet) => name.endsWith(` ${epithet}`))).toBe(false);
+    }
+  });
+
+  it("prepends a gender-matched title when includeTitle is true", () => {
+    const gender = "female";
+    const validTitles = new Set(fantasyTitles[gender]);
+
+    const names = generateNames({
+      setting: "fantasy",
+      gender,
+      count: 10,
+      includeTitle: true,
+    });
+
+    for (const name of names) {
+      const title = name.split(" ")[0];
+      expect(validTitles.has(title)).toBe(true);
+    }
+  });
+
+  it("appends an epithet when includeNickname is true", () => {
+    const names = generateNames({
+      setting: "fantasy",
+      gender: "male",
+      count: 10,
+      includeNickname: true,
+    });
+
+    for (const name of names) {
+      const epithet = "the " + name.split(" the ")[1];
+      expect(fantasyEpithets).toContain(epithet);
+    }
+  });
+
+  it("combines title and nickname together", () => {
+    const gender = "male";
+    const validTitles = new Set(fantasyTitles[gender]);
+
+    const names = generateNames({
+      setting: "fantasy",
+      gender,
+      count: 5,
+      includeTitle: true,
+      includeNickname: true,
+    });
+
+    for (const name of names) {
+      const parts = name.split(" ");
+      expect(validTitles.has(parts[0])).toBe(true);
+      const epithet = "the " + name.split(" the ")[1];
+      expect(fantasyEpithets).toContain(epithet);
+    }
   });
 });

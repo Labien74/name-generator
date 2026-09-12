@@ -39,7 +39,7 @@ export const fantasyRealNames: Record<Gender, string[]> = {
     "Juvun",
     "Jonhol",
     "Jagan",
-    "Jo-Shu Ah",
+    "Jo-Shu-Ah",
     "Kkqr",
     "Kolonius",
     "Krataar",

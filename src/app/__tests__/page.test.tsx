@@ -111,4 +111,38 @@ describe("Home (name generator screen)", () => {
       expect(name?.includes(" ")).toBe(true);
     }
   });
+
+  it("shows title/nickname checkboxes for Fantasy and Realistic, but not Sci-Fi", () => {
+    render(<Home />);
+
+    // Fantasy is the default setting.
+    expect(screen.getByText("Include title")).toBeInTheDocument();
+    expect(screen.getByText("Include nickname")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Setting"), { target: { value: "scifi" } });
+    expect(screen.queryByText("Include title")).not.toBeInTheDocument();
+    expect(screen.queryByText("Include nickname")).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Setting"), { target: { value: "realistic" } });
+    expect(screen.getByText("Include title")).toBeInTheDocument();
+    expect(screen.getByText("Include nickname")).toBeInTheDocument();
+  });
+
+  it("includes a title and nickname in generated names when both checkboxes are checked", () => {
+    render(<Home />);
+
+    fireEvent.click(screen.getByLabelText("Include title"));
+    fireEvent.click(screen.getByLabelText("Include nickname"));
+    fireEvent.click(screen.getByRole("button", { name: "Generate" }));
+
+    const names = within(screen.getByRole("list"))
+      .getAllByRole("listitem")
+      .map((item) => item.textContent ?? "");
+
+    for (const name of names) {
+      // Title is the first word, nickname is signalled by " the " somewhere
+      // in the string (fantasy epithets are stored as "the X").
+      expect(name.includes(" the ")).toBe(true);
+    }
+  });
 });
