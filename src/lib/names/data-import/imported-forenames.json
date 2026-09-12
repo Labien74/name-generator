@@ -4154,5 +4154,825 @@
         "name": "Antonella"
       }
     ]
+  },
+  "india": {
+    "F": [
+      {
+        "country": "IN",
+        "name": "Aditi"
+      },
+      {
+        "country": "IN",
+        "name": "Inaya"
+      },
+      {
+        "country": "IN",
+        "name": "Aarya"
+      },
+      {
+        "country": "IN",
+        "name": "Kiara"
+      },
+      {
+        "country": "IN",
+        "name": "Aadhya"
+      },
+      {
+        "country": "IN",
+        "name": "Vamika"
+      },
+      {
+        "country": "IN",
+        "name": "Pari"
+      },
+      {
+        "country": "IN",
+        "name": "Jiya"
+      },
+      {
+        "country": "IN",
+        "name": "Mehar"
+      },
+      {
+        "country": "IN",
+        "name": "Amayra"
+      },
+      {
+        "country": "NP",
+        "name": "Shristi"
+      },
+      {
+        "country": "NP",
+        "name": "Sunita"
+      },
+      {
+        "country": "NP",
+        "name": "Rabina"
+      },
+      {
+        "country": "NP",
+        "name": "Asmita"
+      },
+      {
+        "country": "NP",
+        "name": "Niharika"
+      },
+      {
+        "country": "NP",
+        "name": "Binita"
+      },
+      {
+        "country": "NP",
+        "name": "Aasha"
+      },
+      {
+        "country": "NP",
+        "name": "Kabita"
+      },
+      {
+        "country": "NP",
+        "name": "Sita"
+      },
+      {
+        "country": "NP",
+        "name": "Gita"
+      },
+      {
+        "country": "PK",
+        "name": "Fatima"
+      },
+      {
+        "country": "PK",
+        "name": "Fozia"
+      },
+      {
+        "country": "PK",
+        "name": "Bismah"
+      },
+      {
+        "country": "PK",
+        "name": "Sobia"
+      },
+      {
+        "country": "PK",
+        "name": "Farrah"
+      },
+      {
+        "country": "PK",
+        "name": "Maryam"
+      },
+      {
+        "country": "PK",
+        "name": "Farzana"
+      },
+      {
+        "country": "PK",
+        "name": "Ayesha"
+      },
+      {
+        "country": "PK",
+        "name": "Sakeena"
+      },
+      {
+        "country": "PK",
+        "name": "Zainab"
+      }
+    ],
+    "M": [
+      {
+        "country": "BD",
+        "name": "Mohammed"
+      },
+      {
+        "country": "BD",
+        "name": "Mohammad"
+      },
+      {
+        "country": "BD",
+        "name": "Abdul"
+      },
+      {
+        "country": "BD",
+        "name": "Muhammad"
+      },
+      {
+        "country": "BD",
+        "name": "Abdullah"
+      },
+      {
+        "country": "BD",
+        "name": "Ahmed"
+      },
+      {
+        "country": "BD",
+        "name": "Syed"
+      },
+      {
+        "country": "BD",
+        "name": "Kazi"
+      },
+      {
+        "country": "BD",
+        "name": "Sheikh"
+      },
+      {
+        "country": "BD",
+        "name": "Hasan"
+      },
+      {
+        "country": "IN",
+        "name": "Muhammad"
+      },
+      {
+        "country": "IN",
+        "name": "Shivansh"
+      },
+      {
+        "country": "IN",
+        "name": "Dhruv"
+      },
+      {
+        "country": "IN",
+        "name": "Kabir"
+      },
+      {
+        "country": "IN",
+        "name": "Vedant"
+      },
+      {
+        "country": "IN",
+        "name": "Kiaan"
+      },
+      {
+        "country": "IN",
+        "name": "Aarav"
+      },
+      {
+        "country": "IN",
+        "name": "Arjun"
+      },
+      {
+        "country": "IN",
+        "name": "Viraj"
+      },
+      {
+        "country": "IN",
+        "name": "Krishna"
+      },
+      {
+        "country": "NP",
+        "name": "Krishna"
+      },
+      {
+        "country": "NP",
+        "name": "Kiran"
+      },
+      {
+        "country": "NP",
+        "name": "Bishal"
+      },
+      {
+        "country": "NP",
+        "name": "Bibek"
+      },
+      {
+        "country": "NP",
+        "name": "Siddhartha"
+      },
+      {
+        "country": "NP",
+        "name": "Manish"
+      },
+      {
+        "country": "NP",
+        "name": "Mahesh"
+      },
+      {
+        "country": "NP",
+        "name": "Kamal"
+      },
+      {
+        "country": "NP",
+        "name": "Prem"
+      },
+      {
+        "country": "NP",
+        "name": "Prakash"
+      },
+      {
+        "country": "PK",
+        "name": "Mohammad"
+      },
+      {
+        "country": "PK",
+        "name": "Ali"
+      },
+      {
+        "country": "PK",
+        "name": "Hussain"
+      },
+      {
+        "country": "PK",
+        "name": "Omar"
+      },
+      {
+        "country": "PK",
+        "name": "Bilal"
+      },
+      {
+        "country": "PK",
+        "name": "Usman"
+      },
+      {
+        "country": "PK",
+        "name": "Zahid"
+      },
+      {
+        "country": "PK",
+        "name": "Shahid"
+      },
+      {
+        "country": "PK",
+        "name": "Saqib"
+      },
+      {
+        "country": "PK",
+        "name": "Nomaan"
+      }
+    ]
+  },
+  "china": {
+    "F": [
+      {
+        "country": "CN",
+        "name": "若汐"
+      },
+      {
+        "country": "CN",
+        "name": "一诺"
+      },
+      {
+        "country": "CN",
+        "name": "艺涵"
+      },
+      {
+        "country": "CN",
+        "name": "依诺"
+      },
+      {
+        "country": "CN",
+        "name": "梓涵"
+      },
+      {
+        "country": "CN",
+        "name": "苡沫"
+      },
+      {
+        "country": "CN",
+        "name": "雨桐"
+      },
+      {
+        "country": "CN",
+        "name": "欣怡"
+      },
+      {
+        "country": "CN",
+        "name": "语桐"
+      },
+      {
+        "country": "CN",
+        "name": "语汐"
+      },
+      {
+        "country": "TW",
+        "name": "淑芬"
+      },
+      {
+        "country": "TW",
+        "name": "淑惠"
+      },
+      {
+        "country": "TW",
+        "name": "美玲"
+      },
+      {
+        "country": "TW",
+        "name": "雅婷"
+      },
+      {
+        "country": "TW",
+        "name": "美惠"
+      },
+      {
+        "country": "TW",
+        "name": "麗華"
+      },
+      {
+        "country": "TW",
+        "name": "淑娟"
+      },
+      {
+        "country": "TW",
+        "name": "淑貞"
+      },
+      {
+        "country": "TW",
+        "name": "怡君"
+      },
+      {
+        "country": "TW",
+        "name": "淑華"
+      }
+    ],
+    "M": [
+      {
+        "country": "CN",
+        "name": "沐宸"
+      },
+      {
+        "country": "CN",
+        "name": "浩宇"
+      },
+      {
+        "country": "CN",
+        "name": "沐辰"
+      },
+      {
+        "country": "CN",
+        "name": "茗泽"
+      },
+      {
+        "country": "CN",
+        "name": "奕辰"
+      },
+      {
+        "country": "CN",
+        "name": "宇泽"
+      },
+      {
+        "country": "CN",
+        "name": "浩然"
+      },
+      {
+        "country": "CN",
+        "name": "奕泽"
+      },
+      {
+        "country": "CN",
+        "name": "宇轩"
+      },
+      {
+        "country": "CN",
+        "name": "沐阳"
+      },
+      {
+        "country": "TW",
+        "name": "家豪"
+      },
+      {
+        "country": "TW",
+        "name": "志明"
+      },
+      {
+        "country": "TW",
+        "name": "俊傑"
+      },
+      {
+        "country": "TW",
+        "name": "建宏"
+      },
+      {
+        "country": "TW",
+        "name": "俊宏"
+      },
+      {
+        "country": "TW",
+        "name": "志豪"
+      },
+      {
+        "country": "TW",
+        "name": "志偉"
+      },
+      {
+        "country": "TW",
+        "name": "文雄"
+      },
+      {
+        "country": "TW",
+        "name": "金龍"
+      },
+      {
+        "country": "TW",
+        "name": "志強"
+      }
+    ]
+  },
+  "japan": {
+    "F": [
+      {
+        "country": "JP",
+        "name": "陽葵"
+      },
+      {
+        "country": "JP",
+        "name": "陽葵"
+      },
+      {
+        "country": "JP",
+        "name": "陽葵"
+      },
+      {
+        "country": "JP",
+        "name": "凛"
+      },
+      {
+        "country": "JP",
+        "name": "詩"
+      },
+      {
+        "country": "JP",
+        "name": "陽菜"
+      },
+      {
+        "country": "JP",
+        "name": "陽菜"
+      },
+      {
+        "country": "JP",
+        "name": "結菜"
+      },
+      {
+        "country": "JP",
+        "name": "結菜"
+      },
+      {
+        "country": "JP",
+        "name": "結菜"
+      },
+      {
+        "country": "JP",
+        "name": "杏"
+      },
+      {
+        "country": "JP",
+        "name": "杏"
+      },
+      {
+        "country": "JP",
+        "name": "澪"
+      },
+      {
+        "country": "JP",
+        "name": "澪"
+      },
+      {
+        "country": "JP",
+        "name": "結愛"
+      },
+      {
+        "country": "JP",
+        "name": "芽依"
+      },
+      {
+        "country": "JP",
+        "name": "莉子"
+      },
+      {
+        "country": "JP",
+        "name": "さくら"
+      },
+      {
+        "country": "JP",
+        "name": "咲茉"
+      }
+    ],
+    "M": [
+      {
+        "country": "JP",
+        "name": "蒼"
+      },
+      {
+        "country": "JP",
+        "name": "蒼"
+      },
+      {
+        "country": "JP",
+        "name": "蒼"
+      },
+      {
+        "country": "JP",
+        "name": "凪"
+      },
+      {
+        "country": "JP",
+        "name": "凪"
+      },
+      {
+        "country": "JP",
+        "name": "蓮"
+      },
+      {
+        "country": "JP",
+        "name": "陽翔"
+      },
+      {
+        "country": "JP",
+        "name": "陽翔"
+      },
+      {
+        "country": "JP",
+        "name": "湊"
+      },
+      {
+        "country": "JP",
+        "name": "颯真"
+      },
+      {
+        "country": "JP",
+        "name": "颯真"
+      },
+      {
+        "country": "JP",
+        "name": "碧"
+      },
+      {
+        "country": "JP",
+        "name": "碧"
+      },
+      {
+        "country": "JP",
+        "name": "樹"
+      },
+      {
+        "country": "JP",
+        "name": "樹"
+      },
+      {
+        "country": "JP",
+        "name": "大和"
+      },
+      {
+        "country": "JP",
+        "name": "悠真"
+      },
+      {
+        "country": "JP",
+        "name": "悠真"
+      },
+      {
+        "country": "JP",
+        "name": "暖"
+      },
+      {
+        "country": "JP",
+        "name": "暖"
+      }
+    ]
+  },
+  "central_asia": {
+    "F": [
+      {
+        "country": "TJ",
+        "name": "Sumayah"
+      },
+      {
+        "country": "TJ",
+        "name": "Asiya"
+      },
+      {
+        "country": "TJ",
+        "name": "Oisha"
+      },
+      {
+        "country": "TJ",
+        "name": "Googoosh"
+      },
+      {
+        "country": "TJ",
+        "name": "Anohito"
+      },
+      {
+        "country": "TJ",
+        "name": "Indira"
+      },
+      {
+        "country": "KG",
+        "name": "Салиха"
+      },
+      {
+        "country": "KG",
+        "name": "Раяна"
+      },
+      {
+        "country": "KG",
+        "name": "Амина"
+      },
+      {
+        "country": "KG",
+        "name": "Фатима"
+      },
+      {
+        "country": "KG",
+        "name": "Айлин"
+      },
+      {
+        "country": "KG",
+        "name": "Алия"
+      },
+      {
+        "country": "KG",
+        "name": "Сафия"
+      },
+      {
+        "country": "KG",
+        "name": "Аруузат"
+      },
+      {
+        "country": "KG",
+        "name": "Хадича"
+      },
+      {
+        "country": "KG",
+        "name": "Арууке"
+      },
+      {
+        "country": "KZ",
+        "name": "Медина"
+      },
+      {
+        "country": "KZ",
+        "name": "Айлин"
+      },
+      {
+        "country": "KZ",
+        "name": "Асылым"
+      },
+      {
+        "country": "KZ",
+        "name": "Айша"
+      },
+      {
+        "country": "KZ",
+        "name": "Раяна"
+      },
+      {
+        "country": "KZ",
+        "name": "Аяла"
+      },
+      {
+        "country": "KZ",
+        "name": "Айзере"
+      },
+      {
+        "country": "KZ",
+        "name": "Амина"
+      },
+      {
+        "country": "KZ",
+        "name": "Томирис"
+      },
+      {
+        "country": "KZ",
+        "name": "Айым"
+      }
+    ],
+    "M": [
+      {
+        "country": "TJ",
+        "name": "Muhammad"
+      },
+      {
+        "country": "TJ",
+        "name": "Yusuf"
+      },
+      {
+        "country": "TJ",
+        "name": "Abdullo"
+      },
+      {
+        "country": "TJ",
+        "name": "Abubakr"
+      },
+      {
+        "country": "KG",
+        "name": "Мухаммад"
+      },
+      {
+        "country": "KG",
+        "name": "Умар"
+      },
+      {
+        "country": "KG",
+        "name": "Али"
+      },
+      {
+        "country": "KG",
+        "name": "Амир"
+      },
+      {
+        "country": "KG",
+        "name": "Билал"
+      },
+      {
+        "country": "KG",
+        "name": "Алихан"
+      },
+      {
+        "country": "KG",
+        "name": "Алинур"
+      },
+      {
+        "country": "KG",
+        "name": "Нурислам"
+      },
+      {
+        "country": "KG",
+        "name": "Эмир"
+      },
+      {
+        "country": "KG",
+        "name": "Усман"
+      },
+      {
+        "country": "KZ",
+        "name": "Алихан"
+      },
+      {
+        "country": "KZ",
+        "name": "Айсұлтан"
+      },
+      {
+        "country": "KZ",
+        "name": "Нұрислам"
+      },
+      {
+        "country": "KZ",
+        "name": "Алдияр"
+      },
+      {
+        "country": "KZ",
+        "name": "Амир"
+      },
+      {
+        "country": "KZ",
+        "name": "Алинұр"
+      },
+      {
+        "country": "KZ",
+        "name": "Әли"
+      },
+      {
+        "country": "KZ",
+        "name": "Омар"
+      },
+      {
+        "country": "KZ",
+        "name": "Рамада́н"
+      },
+      {
+        "country": "KZ",
+        "name": "Мұхаммед"
+      }
+    ]
   }
 }
