@@ -11,5 +11,5 @@ fi
 echo "Running pre-commit checks on branch '$branch': lint, typecheck, tests..."
 
 npm run lint || exit 1
-npx tsc --noEmit || exit 1
+npm run typecheck || exit 1
 npm test || exit 1
