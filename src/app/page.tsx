@@ -41,7 +41,11 @@ export default function Home() {
   const [count, setCount] = useState(5);
   const [region, setRegion] = useState<RealisticRegion | "">("");
   const [century, setCentury] = useState<RealisticCentury | "">("");
+  const [includeTitle, setIncludeTitle] = useState(false);
+  const [includeNickname, setIncludeNickname] = useState(false);
   const [names, setNames] = useState<string[]>([]);
+
+  const supportsTitleAndNickname = setting === "fantasy" || setting === "realistic";
 
   function handleGenerate() {
     setNames(
@@ -51,6 +55,8 @@ export default function Home() {
         count,
         region: region || undefined,
         century: century || undefined,
+        includeTitle: supportsTitleAndNickname && includeTitle,
+        includeNickname: supportsTitleAndNickname && includeNickname,
       })
     );
   }
@@ -144,6 +150,27 @@ export default function Home() {
               }
             />
           </label>
+
+          {supportsTitleAndNickname && (
+            <div className="flex flex-col gap-2 pt-1">
+              <label className="flex items-center gap-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                <input
+                  type="checkbox"
+                  checked={includeTitle}
+                  onChange={(event) => setIncludeTitle(event.target.checked)}
+                />
+                Include title
+              </label>
+              <label className="flex items-center gap-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                <input
+                  type="checkbox"
+                  checked={includeNickname}
+                  onChange={(event) => setIncludeNickname(event.target.checked)}
+                />
+                Include nickname
+              </label>
+            </div>
+          )}
 
           <button
             className="mt-2 rounded-full bg-foreground px-5 py-3 font-medium text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc]"
