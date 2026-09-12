@@ -1,7 +1,16 @@
 import { describe, it, expect } from "vitest";
 import importedForenames from "../data-import/imported-forenames.json";
 
-const EXPECTED_REGIONS = ["western_europe", "eastern_europe", "usa", "latin_america"];
+const EXPECTED_REGIONS = [
+  "western_europe",
+  "eastern_europe",
+  "usa",
+  "latin_america",
+  "central_asia",
+  "india",
+  "japan",
+  "china",
+];
 
 describe("imported-forenames.json (staging data, not wired into the app)", () => {
   it("has exactly the expected regions, each with non-empty F and M lists", () => {

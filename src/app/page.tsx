@@ -22,12 +22,17 @@ const REGIONS: { value: RealisticRegion | ""; label: string }[] = [
   { value: "eastern_europe", label: "Восточная Европа" },
   { value: "usa", label: "США" },
   { value: "latin_america", label: "Латинская Америка" },
+  { value: "central_asia", label: "Средняя Азия" },
+  { value: "india", label: "Индия" },
+  { value: "japan", label: "Япония" },
+  { value: "china", label: "Китай" },
 ];
 
 const CENTURIES: { value: RealisticCentury | ""; label: string }[] = [
   { value: "", label: "Любой" },
   { value: "1200_1600", label: "1200–1600" },
   { value: "20th_century", label: "XX век" },
+  { value: "21st_century", label: "XXI век" },
 ];
 
 export default function Home() {

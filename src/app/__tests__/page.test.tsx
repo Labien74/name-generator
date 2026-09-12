@@ -87,6 +87,7 @@ describe("Home (name generator screen)", () => {
 
     fireEvent.change(screen.getByLabelText("Сеттинг"), { target: { value: "realistic" } });
     fireEvent.change(screen.getByLabelText("Регион"), { target: { value: "usa" } });
+    fireEvent.change(screen.getByLabelText("Век"), { target: { value: "20th_century" } });
     fireEvent.change(screen.getByLabelText("Пол"), { target: { value: "male" } });
     fireEvent.click(screen.getByRole("button", { name: "Сгенерировать" }));
 

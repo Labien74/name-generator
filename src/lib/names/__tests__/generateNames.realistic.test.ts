@@ -9,10 +9,18 @@ const EXPECTED_PERIODS = [
   "eastern_europe_20th_century",
   "usa_20th_century",
   "latin_america_20th_century",
+  "western_europe_21st_century",
+  "eastern_europe_21st_century",
+  "usa_21st_century",
+  "latin_america_21st_century",
+  "central_asia_21st_century",
+  "india_21st_century",
+  "japan_21st_century",
+  "china_21st_century",
 ].sort();
 
 describe("realisticDataset", () => {
-  it("covers all 6 sub-periods/regions with names for every gender", () => {
+  it("covers all 14 sub-periods/regions with names for every gender", () => {
     const periods = Object.keys(realisticDataset).sort();
     expect(periods).toEqual(EXPECTED_PERIODS);
 
@@ -163,9 +171,48 @@ describe("generateNames (realistic)", () => {
       gender,
       count: 5,
       region: "latin_america",
+      century: "20th_century",
     });
 
     expect(names).toHaveLength(5);
+    for (const name of names) {
+      expect(validNames.has(name)).toBe(true);
+    }
+  });
+
+  it("restricts to Japan's 21st-century period (new region)", () => {
+    const gender = "male";
+    const validNames = new Set(realisticDataset.japan_21st_century[gender]);
+
+    const names = generateNames({
+      setting: "realistic",
+      gender,
+      count: 5,
+      region: "japan",
+    });
+
+    expect(names).toHaveLength(5);
+    for (const name of names) {
+      expect(validNames.has(name)).toBe(true);
+    }
+  });
+
+  it("restricts to the 21st century across all regions when only century is given", () => {
+    const gender = "female";
+    const validNames = new Set(
+      (Object.keys(realisticDataset) as (keyof typeof realisticDataset)[])
+        .filter((period) => realisticPeriodMeta[period].century === "21st_century")
+        .flatMap((period) => realisticDataset[period][gender])
+    );
+
+    const names = generateNames({
+      setting: "realistic",
+      gender,
+      count: 10,
+      century: "21st_century",
+    });
+
+    expect(names).toHaveLength(10);
     for (const name of names) {
       expect(validNames.has(name)).toBe(true);
     }
