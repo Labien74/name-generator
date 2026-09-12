@@ -16,3 +16,12 @@ export type HistoricalPeriod =
   | "europe_20th_century";
 
 export type HistoricalDataset = Record<HistoricalPeriod, Record<Gender, string[]>>;
+
+export type HistoricalRegion = "western_europe" | "eastern_europe" | "usa" | "europe";
+
+export type HistoricalCentury = "1200_1600" | "20th_century";
+
+export interface HistoricalPeriodMeta {
+  region: HistoricalRegion;
+  century: HistoricalCentury;
+}

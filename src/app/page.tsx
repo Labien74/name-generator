@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { generateNames } from "@/lib/names/generateNames";
-import type { Gender, Setting } from "@/lib/names/types";
+import type { Gender, HistoricalCentury, HistoricalRegion, Setting } from "@/lib/names/types";
 
 const SETTINGS: { value: Setting; label: string }[] = [
   { value: "fantasy", label: "Фэнтези" },
@@ -16,14 +16,38 @@ const GENDERS: { value: Gender; label: string }[] = [
   { value: "neutral", label: "Нейтральное" },
 ];
 
+const REGIONS: { value: HistoricalRegion | ""; label: string }[] = [
+  { value: "", label: "Любой" },
+  { value: "western_europe", label: "Западная Европа" },
+  { value: "eastern_europe", label: "Восточная Европа" },
+  { value: "usa", label: "США" },
+  { value: "europe", label: "Европа" },
+];
+
+const CENTURIES: { value: HistoricalCentury | ""; label: string }[] = [
+  { value: "", label: "Любой" },
+  { value: "1200_1600", label: "1200–1600" },
+  { value: "20th_century", label: "XX век" },
+];
+
 export default function Home() {
   const [setting, setSetting] = useState<Setting>("fantasy");
   const [gender, setGender] = useState<Gender>("male");
   const [count, setCount] = useState(5);
+  const [region, setRegion] = useState<HistoricalRegion | "">("");
+  const [century, setCentury] = useState<HistoricalCentury | "">("");
   const [names, setNames] = useState<string[]>([]);
 
   function handleGenerate() {
-    setNames(generateNames({ setting, gender, count }));
+    setNames(
+      generateNames({
+        setting,
+        gender,
+        count,
+        region: region || undefined,
+        century: century || undefined,
+      })
+    );
   }
 
   return (
@@ -48,6 +72,44 @@ export default function Home() {
               ))}
             </select>
           </label>
+
+          {setting === "historical" && (
+            <>
+              <label className="flex flex-col gap-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                Регион
+                <select
+                  className="rounded-md border border-black/[.08] bg-white px-3 py-2 text-black dark:border-white/[.145] dark:bg-black dark:text-zinc-50"
+                  value={region}
+                  onChange={(event) =>
+                    setRegion(event.target.value as HistoricalRegion | "")
+                  }
+                >
+                  {REGIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="flex flex-col gap-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                Век
+                <select
+                  className="rounded-md border border-black/[.08] bg-white px-3 py-2 text-black dark:border-white/[.145] dark:bg-black dark:text-zinc-50"
+                  value={century}
+                  onChange={(event) =>
+                    setCentury(event.target.value as HistoricalCentury | "")
+                  }
+                >
+                  {CENTURIES.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </>
+          )}
 
           <label className="flex flex-col gap-1 text-sm font-medium text-zinc-700 dark:text-zinc-300">
             Пол
