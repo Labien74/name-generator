@@ -1,5 +1,6 @@
 import { fantasyDataset } from "./datasets/fantasy";
 import { fantasyRealNames } from "./datasets/fantasyRealNames";
+import { fantasySurnames } from "./datasets/fantasySurnames";
 import { scifiDataset } from "./datasets/scifi";
 import { realisticDataset, realisticPeriodMeta } from "./datasets/realistic";
 import { realisticSurnames } from "./datasets/realisticSurnames";
@@ -75,6 +76,15 @@ function buildRealisticName(
   return `${firstName} ${surname}`;
 }
 
+function buildFantasyName(gender: Gender): string {
+  const firstName =
+    Math.random() < FANTASY_REAL_NAME_CHANCE
+      ? pickRandom(fantasyRealNames[gender])
+      : buildSyllableName(fantasyDataset, gender);
+  const surname = pickRandom(fantasySurnames);
+  return `${firstName} ${surname}`;
+}
+
 function buildName(
   setting: Setting,
   gender: Gender,
@@ -84,8 +94,8 @@ function buildName(
   if (setting === "realistic") {
     return buildRealisticName(gender, region, century);
   }
-  if (setting === "fantasy" && Math.random() < FANTASY_REAL_NAME_CHANCE) {
-    return pickRandom(fantasyRealNames[gender]);
+  if (setting === "fantasy") {
+    return buildFantasyName(gender);
   }
   return buildSyllableName(syllableDatasets[setting]!, gender);
 }

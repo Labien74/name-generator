@@ -2,6 +2,15 @@ import { describe, it, expect, vi } from "vitest";
 import { generateNames } from "../generateNames";
 import { fantasyDataset } from "../datasets/fantasy";
 import { fantasyRealNames } from "../datasets/fantasyRealNames";
+import { fantasySurnames } from "../datasets/fantasySurnames";
+
+function firstNameOf(fullName: string): string {
+  return fullName.slice(0, fullName.indexOf(" "));
+}
+
+function surnameOf(fullName: string): string {
+  return fullName.slice(fullName.indexOf(" ") + 1);
+}
 
 describe("generateNames (fantasy)", () => {
   it("returns exactly 1 name when count is 1", () => {
@@ -20,7 +29,7 @@ describe("generateNames (fantasy)", () => {
     expect(first).not.toEqual(second);
   });
 
-  it("only returns names built from the syllable pool or the curated real-name pool", () => {
+  it("only returns first names built from the syllable pool or the curated real-name pool", () => {
     const gender = "female";
     const { prefixes, suffixes } = fantasyDataset[gender];
     const validCombos = new Set([
@@ -31,7 +40,7 @@ describe("generateNames (fantasy)", () => {
     const names = generateNames({ setting: "fantasy", gender, count: 10 });
 
     for (const name of names) {
-      expect(validCombos.has(name)).toBe(true);
+      expect(validCombos.has(firstNameOf(name))).toBe(true);
     }
   });
 
@@ -41,8 +50,19 @@ describe("generateNames (fantasy)", () => {
 
     const names = generateNames({ setting: "fantasy", gender, count: 20 });
 
-    const includesARealName = names.some((name) => realNames.has(name));
+    const includesARealName = names.some((name) => realNames.has(firstNameOf(name)));
     expect(includesARealName).toBe(true);
+  });
+
+  it("always includes a surname from the fantasy surname pool", () => {
+    const validSurnames = new Set(fantasySurnames);
+
+    const names = generateNames({ setting: "fantasy", gender: "male", count: 10 });
+
+    for (const name of names) {
+      expect(name.includes(" ")).toBe(true);
+      expect(validSurnames.has(surnameOf(name))).toBe(true);
+    }
   });
 
   it("never touches the network, even if fetch is available", () => {
