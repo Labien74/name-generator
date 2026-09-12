@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { generateNames } from "../generateNames";
 import { fantasyDataset } from "../datasets/fantasy";
+import { fantasyRealNames } from "../datasets/fantasyRealNames";
 
 describe("generateNames (fantasy)", () => {
   it("returns exactly 1 name when count is 1", () => {
@@ -19,18 +20,29 @@ describe("generateNames (fantasy)", () => {
     expect(first).not.toEqual(second);
   });
 
-  it("only returns names built from the requested gender's syllable pool", () => {
+  it("only returns names built from the syllable pool or the curated real-name pool", () => {
     const gender = "female";
     const { prefixes, suffixes } = fantasyDataset[gender];
-    const validCombos = new Set(
-      prefixes.flatMap((prefix) => suffixes.map((suffix) => `${prefix}${suffix}`))
-    );
+    const validCombos = new Set([
+      ...prefixes.flatMap((prefix) => suffixes.map((suffix) => `${prefix}${suffix}`)),
+      ...fantasyRealNames[gender],
+    ]);
 
     const names = generateNames({ setting: "fantasy", gender, count: 10 });
 
     for (const name of names) {
       expect(validCombos.has(name)).toBe(true);
     }
+  });
+
+  it("blends in curated real names alongside syllable-generated ones", () => {
+    const gender = "male";
+    const realNames = new Set(fantasyRealNames[gender]);
+
+    const names = generateNames({ setting: "fantasy", gender, count: 20 });
+
+    const includesARealName = names.some((name) => realNames.has(name));
+    expect(includesARealName).toBe(true);
   });
 
   it("never touches the network, even if fetch is available", () => {
