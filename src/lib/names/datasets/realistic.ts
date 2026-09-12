@@ -1,6 +1,6 @@
-import type { HistoricalDataset, HistoricalPeriod, HistoricalPeriodMeta } from "../types";
+import type { RealisticDataset, RealisticPeriod, RealisticPeriodMeta } from "../types";
 
-export const historicalPeriodMeta: Record<HistoricalPeriod, HistoricalPeriodMeta> = {
+export const realisticPeriodMeta: Record<RealisticPeriod, RealisticPeriodMeta> = {
   western_europe_1200_1600: { region: "western_europe", century: "1200_1600" },
   eastern_europe_1200_1600: { region: "eastern_europe", century: "1200_1600" },
   western_europe_20th_century: { region: "western_europe", century: "20th_century" },
@@ -9,7 +9,7 @@ export const historicalPeriodMeta: Record<HistoricalPeriod, HistoricalPeriodMeta
   latin_america_20th_century: { region: "latin_america", century: "20th_century" },
 };
 
-export const historicalDataset: HistoricalDataset = {
+export const realisticDataset: RealisticDataset = {
   western_europe_1200_1600: {
     male: ["Guillaume", "Henri", "Baldwin", "Conrad", "Frederick", "Edmund", "Geoffrey", "Lucas"],
     female: ["Isabeau", "Eleanor", "Beatrice", "Constance", "Mathilde", "Adelaide", "Blanche", "Catherine"],
