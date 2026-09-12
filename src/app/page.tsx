@@ -21,7 +21,7 @@ const REGIONS: { value: HistoricalRegion | ""; label: string }[] = [
   { value: "western_europe", label: "Западная Европа" },
   { value: "eastern_europe", label: "Восточная Европа" },
   { value: "usa", label: "США" },
-  { value: "europe", label: "Европа" },
+  { value: "latin_america", label: "Латинская Америка" },
 ];
 
 const CENTURIES: { value: HistoricalCentury | ""; label: string }[] = [
