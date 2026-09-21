@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { generateNames } from "../generateNames";
+import { generateNames, hasRealisticPeriod } from "../generateNames";
 import { realisticDataset, realisticPeriodMeta } from "../datasets/realistic";
 import { realisticSurnames } from "../datasets/realisticSurnames";
 import { realisticTitles, realisticEpithets } from "../datasets/realisticTitlesAndEpithets";
@@ -292,5 +292,16 @@ describe("generateNames (realistic)", () => {
     for (const name of names) {
       expect(realisticEpithets.some((epithet) => name.endsWith(` ${epithet}`))).toBe(true);
     }
+  });
+
+  it("reports which region+century combinations have data", () => {
+    expect(hasRealisticPeriod(undefined, undefined)).toBe(true);
+    expect(hasRealisticPeriod("japan", undefined)).toBe(true);
+    expect(hasRealisticPeriod(undefined, "1200_1600")).toBe(true);
+    expect(hasRealisticPeriod("western_europe", "1200_1600")).toBe(true);
+    expect(hasRealisticPeriod("japan", "21st_century")).toBe(true);
+    expect(hasRealisticPeriod("japan", "1200_1600")).toBe(false);
+    expect(hasRealisticPeriod("usa", "1200_1600")).toBe(false);
+    expect(hasRealisticPeriod("india", "20th_century")).toBe(false);
   });
 });
