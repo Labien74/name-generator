@@ -16,6 +16,8 @@ export type RealisticPeriod =
   | "eastern_europe_1100_1300"
   | "western_europe_1300_1550"
   | "eastern_europe_1300_1550"
+  | "western_europe_1550_1800"
+  | "eastern_europe_1550_1800"
   | "western_europe_20th_century"
   | "eastern_europe_20th_century"
   | "usa_20th_century"
@@ -60,6 +62,7 @@ export type RealisticCentury =
   | "600_1100"
   | "1100_1300"
   | "1300_1550"
+  | "1550_1800"
   | "20th_century"
   | "21st_century";
 
@@ -75,6 +78,7 @@ export type NameEra =
   | "early_medieval"
   | "high_medieval"
   | "late_medieval"
+  | "early_modern"
   | "modern";
 
 export interface RealisticPeriodMeta {
