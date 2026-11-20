@@ -5,8 +5,13 @@ import { fantasyTitles, fantasyEpithets } from "./datasets/fantasyTitlesAndEpith
 import { realisticDataset, realisticPeriodMeta } from "./datasets/realistic";
 import { realisticSurnames, realisticSurnamesByCulture } from "./datasets/realisticSurnames";
 import { realisticPeriodSurnames } from "./datasets/realisticPeriodSurnames";
-import { realisticTitles, realisticEpithets } from "./datasets/realisticTitlesAndEpithets";
+import { realisticBynames } from "./datasets/realisticBynames";
+import {
+  realisticTitlesByEra,
+  realisticEpithets,
+} from "./datasets/realisticTitlesAndEpithets";
 import type {
+  BynameRule,
   Gender,
   RealisticCentury,
   RealisticPeriod,
@@ -118,6 +123,54 @@ function surnamePoolFor(
   return ownPool?.length ? ownPool : widePool;
 }
 
+function applyByname(
+  rule: BynameRule,
+  period: RealisticPeriod,
+  culture: string,
+  gender: Gender
+): string | undefined {
+  if (rule.kind === "toponymic") {
+    return `${rule.particle} ${pickRandom(rule.places)}`;
+  }
+  if (rule.kind === "descriptive") {
+    return `${rule.particle} ${pickRandom(rule.epithets)}`;
+  }
+
+  // Patronymic: built from a male given name of the same culture, which is
+  // why these multiply instead of needing their own word list.
+  const fathers = realisticDataset[period].male.filter(
+    (entry) => entry.culture === culture
+  );
+  if (fathers.length === 0) {
+    return undefined;
+  }
+
+  const father = pickRandom(fathers).name;
+  const { prefix, suffix } = gender === "female" ? rule.female : rule.male;
+  return `${prefix ? `${prefix} ` : ""}${father}${suffix ?? ""}`;
+}
+
+/**
+ * The second element of a name in a period that predates surnames. Returns
+ * the text plus whether it was a descriptive epithet, because the optional
+ * nickname is the same shape and stacking them reads badly ("the Red the
+ * Wise").
+ */
+function buildByname(
+  period: RealisticPeriod,
+  culture: string | undefined,
+  gender: Gender
+): { text: string; isDescriptive: boolean } | undefined {
+  const rules = culture ? realisticBynames[period]?.[culture] : undefined;
+  if (!rules?.length) {
+    return undefined;
+  }
+
+  const rule = pickRandom(rules);
+  const text = applyByname(rule, period, culture!, gender);
+  return text ? { text, isDescriptive: rule.kind === "descriptive" } : undefined;
+}
+
 function buildRealisticName(
   gender: Gender,
   region: RealisticRegion | undefined,
@@ -129,13 +182,25 @@ function buildRealisticName(
   const period = pickRandom(periods);
   const firstName = pickRandom(realisticDataset[period][gender]);
 
-  const surname = pickRandom(surnamePoolFor(period, firstName.culture));
-  const baseName = `${firstName.name} ${surname}`;
+  // Periods listed in realisticBynames have no hereditary surnames, so the
+  // second element is a byname instead. A culture with no rules there (the
+  // untagged placeholder names) still falls back to a surname.
+  const byname = realisticBynames[period]
+    ? buildByname(period, firstName.culture, gender)
+    : undefined;
+
+  const secondElement =
+    byname?.text ?? pickRandom(surnamePoolFor(period, firstName.culture));
+  const baseName = `${firstName.name} ${secondElement}`;
 
   return withTitleAndNickname(
     baseName,
-    includeTitle ? pickRandom(realisticTitles) : undefined,
-    includeNickname ? pickRandom(realisticEpithets) : undefined
+    includeTitle
+      ? pickRandom(realisticTitlesByEra[realisticPeriodMeta[period].era])
+      : undefined,
+    includeNickname && !byname?.isDescriptive
+      ? pickRandom(realisticEpithets)
+      : undefined
   );
 }
 
