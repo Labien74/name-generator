@@ -54,40 +54,67 @@ function withTitleAndNickname(
   return epithet ? `${withTitle} ${epithet}` : withTitle;
 }
 
+/**
+ * Pre-modern European name stocks were strongly gendered and had no epicene
+ * pool, so those periods carry no "neutral" names at all rather than an
+ * invented placeholder list. A period offers a gender only if it has names
+ * for it.
+ */
+export function periodSupportsGender(
+  period: RealisticPeriod,
+  gender: Gender
+): boolean {
+  return realisticDataset[period][gender].length > 0;
+}
+
 function periodMatches(
   period: RealisticPeriod,
   region: RealisticRegion | undefined,
-  century: RealisticCentury | undefined
+  century: RealisticCentury | undefined,
+  gender: Gender | undefined
 ): boolean {
   const meta = realisticPeriodMeta[period];
-  return (!region || meta.region === region) && (!century || meta.century === century);
+  return (
+    (!region || meta.region === region) &&
+    (!century || meta.century === century) &&
+    (!gender || periodSupportsGender(period, gender))
+  );
 }
 
-// Whether any realistic period has data for this region+century pair.
-// Used by the UI to disable filter combinations that would otherwise
-// fall back to the full mix.
+// Whether any realistic period has data for this region+century+gender
+// combination. Used by the UI to disable filter combinations that would
+// otherwise fall back to the full mix.
 export function hasRealisticPeriod(
   region: RealisticRegion | undefined,
-  century: RealisticCentury | undefined
+  century: RealisticCentury | undefined,
+  gender?: Gender
 ): boolean {
-  return allRealisticPeriods.some((period) => periodMatches(period, region, century));
+  return allRealisticPeriods.some((period) =>
+    periodMatches(period, region, century, gender)
+  );
 }
 
 function resolveRealisticPeriods(
   region: RealisticRegion | undefined,
-  century: RealisticCentury | undefined
+  century: RealisticCentury | undefined,
+  gender: Gender
 ): RealisticPeriod[] {
-  if (!region && !century) {
-    return allRealisticPeriods;
-  }
-
-  const matching = allRealisticPeriods.filter((period) =>
-    periodMatches(period, region, century)
+  const withGender = allRealisticPeriods.filter((period) =>
+    periodSupportsGender(period, gender)
   );
 
-  // No period matches this region+century combination (e.g. sparse data) —
-  // fall back to the full mix rather than returning nothing.
-  return matching.length > 0 ? matching : allRealisticPeriods;
+  if (!region && !century) {
+    return withGender;
+  }
+
+  const matching = withGender.filter((period) =>
+    periodMatches(period, region, century, gender)
+  );
+
+  // No period matches this combination (e.g. sparse data, or "neutral" on a
+  // pre-modern century) — fall back to the full mix for that gender rather
+  // than returning nothing.
+  return matching.length > 0 ? matching : withGender;
 }
 
 // How often the surname is drawn from the given name's own culture rather
@@ -178,7 +205,7 @@ function buildRealisticName(
   includeTitle: boolean,
   includeNickname: boolean
 ): string {
-  const periods = resolveRealisticPeriods(region, century);
+  const periods = resolveRealisticPeriods(region, century, gender);
   const period = pickRandom(periods);
   const firstName = pickRandom(realisticDataset[period][gender]);
 
