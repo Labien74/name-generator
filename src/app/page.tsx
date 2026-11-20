@@ -74,7 +74,14 @@ export default function Home() {
             <select
               className="rounded-md border border-black/[.08] bg-white px-3 py-2 text-black dark:border-white/[.145] dark:bg-black dark:text-zinc-50"
               value={setting}
-              onChange={(event) => setSetting(event.target.value as Setting)}
+              onChange={(event) => {
+                setSetting(event.target.value as Setting);
+                // Region and century only exist for Realistic, but their
+                // state would otherwise survive a trip through Fantasy and
+                // come back paired with a gender that period cannot serve.
+                setRegion("");
+                setCentury("");
+              }}
             >
               {SETTINGS.map((option) => (
                 <option key={option.value} value={option.value}>

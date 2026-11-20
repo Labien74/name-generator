@@ -221,4 +221,28 @@ describe("Home (name generator screen)", () => {
     expect(option("Gender", "Male").disabled).toBe(false);
     expect(option("Gender", "Female").disabled).toBe(false);
   });
+
+  it("clears region and century when the setting changes", () => {
+    // Otherwise they survive a trip through Fantasy and come back paired
+    // with a gender their period cannot serve: pick 600-1100 + Male, switch
+    // to Fantasy, pick Neutral there, come back, and the screen would claim
+    // 600-1100 + Neutral while generating 21st-century names.
+    render(<Home />);
+
+    fireEvent.change(screen.getByLabelText("Setting"), { target: { value: "realistic" } });
+    fireEvent.change(screen.getByLabelText("Century"), { target: { value: "600_1100" } });
+    expect((screen.getByLabelText("Century") as HTMLSelectElement).value).toBe("600_1100");
+
+    fireEvent.change(screen.getByLabelText("Setting"), { target: { value: "fantasy" } });
+    fireEvent.change(screen.getByLabelText("Gender"), { target: { value: "neutral" } });
+    fireEvent.change(screen.getByLabelText("Setting"), { target: { value: "realistic" } });
+
+    expect((screen.getByLabelText("Century") as HTMLSelectElement).value).toBe("");
+    expect((screen.getByLabelText("Region") as HTMLSelectElement).value).toBe("");
+
+    const neutral = within(screen.getByLabelText("Gender")).getByRole("option", {
+      name: "Neutral",
+    }) as HTMLOptionElement;
+    expect(neutral.disabled).toBe(false);
+  });
 });

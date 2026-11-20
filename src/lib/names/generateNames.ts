@@ -103,6 +103,14 @@ function resolveRealisticPeriods(
     periodSupportsGender(period, gender)
   );
 
+  // Everything below assumes at least one period can serve the gender. If a
+  // pool is ever emptied and that stops being true, fail with a readable
+  // message instead of letting pickRandom hand back undefined and blowing up
+  // one line later on realisticDataset[undefined].
+  if (withGender.length === 0) {
+    throw new Error(`No realistic period has names for gender "${gender}"`);
+  }
+
   if (!region && !century) {
     return withGender;
   }
