@@ -3,7 +3,7 @@ import { fantasyRealNames } from "./datasets/fantasyRealNames";
 import { fantasySurnames } from "./datasets/fantasySurnames";
 import { fantasyTitles, fantasyEpithets } from "./datasets/fantasyTitlesAndEpithets";
 import { realisticDataset, realisticPeriodMeta } from "./datasets/realistic";
-import { realisticSurnames } from "./datasets/realisticSurnames";
+import { realisticSurnames, realisticSurnamesByCulture } from "./datasets/realisticSurnames";
 import { realisticPeriodSurnames } from "./datasets/realisticPeriodSurnames";
 import { realisticTitles, realisticEpithets } from "./datasets/realisticTitlesAndEpithets";
 import type {
@@ -85,6 +85,39 @@ function resolveRealisticPeriods(
   return matching.length > 0 ? matching : allRealisticPeriods;
 }
 
+// How often the surname is drawn from the given name's own culture rather
+// than from the whole region. Deliberately below 1: strict culture pairing
+// reads as more authentic but is noticeably less varied — some countries
+// contribute only ten surnames to the dataset — and for a GM tool variety
+// matters slightly more than full historical accuracy. Raise it towards 1 for
+// accuracy, lower it for variety.
+const SAME_CULTURE_SURNAME_CHANCE = 0.7;
+
+// The surname always follows the first name's own period — not the requested
+// filter — so it stays consistent even when the filter is "any" and the drawn
+// periods span several regions.
+function surnamePoolFor(
+  period: RealisticPeriod,
+  culture: string | undefined
+): string[] {
+  const periodPools = realisticPeriodSurnames[period];
+  const widePool = periodPools
+    ? Object.values(periodPools).flat()
+    : realisticSurnames[realisticPeriodMeta[period].region];
+
+  if (!culture || Math.random() >= SAME_CULTURE_SURNAME_CHANCE) {
+    return widePool;
+  }
+
+  // Cultures with no surnames of their own (CY, KG, TJ, PK and several Latin
+  // American codes) fall back to the wide pool.
+  const ownPool = periodPools
+    ? periodPools[culture]
+    : realisticSurnamesByCulture[realisticPeriodMeta[period].region][culture];
+
+  return ownPool?.length ? ownPool : widePool;
+}
+
 function buildRealisticName(
   gender: Gender,
   region: RealisticRegion | undefined,
@@ -96,15 +129,8 @@ function buildRealisticName(
   const period = pickRandom(periods);
   const firstName = pickRandom(realisticDataset[period][gender]);
 
-  // A period with its own surname pool uses it; the rest fall back to the
-  // region-wide pool, which isn't split by century. Either way the surname
-  // follows the first name's own period — not the requested filter — so it
-  // stays consistent even when the filter is "any" and the drawn periods
-  // span several regions.
-  const surname = pickRandom(
-    realisticPeriodSurnames[period] ?? realisticSurnames[realisticPeriodMeta[period].region]
-  );
-  const baseName = `${firstName} ${surname}`;
+  const surname = pickRandom(surnamePoolFor(period, firstName.culture));
+  const baseName = `${firstName.name} ${surname}`;
 
   return withTitleAndNickname(
     baseName,

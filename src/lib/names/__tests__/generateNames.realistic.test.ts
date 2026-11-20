@@ -1,15 +1,20 @@
 import { describe, it, expect, vi } from "vitest";
 import { generateNames, hasRealisticPeriod } from "../generateNames";
 import { realisticDataset, realisticPeriodMeta } from "../datasets/realistic";
-import { realisticSurnames } from "../datasets/realisticSurnames";
+import { realisticSurnames, realisticSurnamesByCulture } from "../datasets/realisticSurnames";
 import { realisticPeriodSurnames } from "../datasets/realisticPeriodSurnames";
 import { realisticTitles, realisticEpithets } from "../datasets/realisticTitlesAndEpithets";
+import type { CulturedName, RealisticPeriod } from "../types";
 
 // Surnames can themselves contain spaces (e.g. "De Los Santos"), so split
 // only on the first space to separate the first name from the surname.
 function firstNameOf(fullName: string): string {
   const spaceIndex = fullName.indexOf(" ");
   return spaceIndex === -1 ? fullName : fullName.slice(0, spaceIndex);
+}
+
+function namesIn(pool: CulturedName[]): string[] {
+  return pool.map((entry) => entry.name);
 }
 
 function surnameOf(fullName: string): string {
@@ -68,7 +73,7 @@ describe("generateNames (realistic)", () => {
   it("only returns names present in the requested gender's pool across all periods", () => {
     const gender = "female";
     const validNames = new Set(
-      Object.values(realisticDataset).flatMap((period) => period[gender])
+      Object.values(realisticDataset).flatMap((period) => namesIn(period[gender]))
     );
 
     const names = generateNames({ setting: "realistic", gender, count: 10 });
@@ -101,7 +106,7 @@ describe("generateNames (realistic)", () => {
     const validNames = new Set(
       (Object.keys(realisticDataset) as (keyof typeof realisticDataset)[])
         .filter((period) => realisticPeriodMeta[period].region === "western_europe")
-        .flatMap((period) => realisticDataset[period][gender])
+        .flatMap((period) => namesIn(realisticDataset[period][gender]))
     );
 
     const names = generateNames({
@@ -122,7 +127,7 @@ describe("generateNames (realistic)", () => {
     const validNames = new Set(
       (Object.keys(realisticDataset) as (keyof typeof realisticDataset)[])
         .filter((period) => realisticPeriodMeta[period].century === "20th_century")
-        .flatMap((period) => realisticDataset[period][gender])
+        .flatMap((period) => namesIn(realisticDataset[period][gender]))
     );
 
     const names = generateNames({
@@ -140,7 +145,7 @@ describe("generateNames (realistic)", () => {
 
   it("combines region and century to a single matching period", () => {
     const gender = "male";
-    const validNames = new Set(realisticDataset.usa_20th_century[gender]);
+    const validNames = new Set(namesIn(realisticDataset.usa_20th_century[gender]));
 
     const names = generateNames({
       setting: "realistic",
@@ -179,7 +184,7 @@ describe("generateNames (realistic)", () => {
 
   it("restricts to Latin America's 20th-century period", () => {
     const gender = "female";
-    const validNames = new Set(realisticDataset.latin_america_20th_century[gender]);
+    const validNames = new Set(namesIn(realisticDataset.latin_america_20th_century[gender]));
 
     const names = generateNames({
       setting: "realistic",
@@ -197,7 +202,7 @@ describe("generateNames (realistic)", () => {
 
   it("restricts to Japan's 21st-century period (new region)", () => {
     const gender = "male";
-    const validNames = new Set(realisticDataset.japan_21st_century[gender]);
+    const validNames = new Set(namesIn(realisticDataset.japan_21st_century[gender]));
 
     const names = generateNames({
       setting: "realistic",
@@ -217,7 +222,7 @@ describe("generateNames (realistic)", () => {
     const validNames = new Set(
       (Object.keys(realisticDataset) as (keyof typeof realisticDataset)[])
         .filter((period) => realisticPeriodMeta[period].century === "21st_century")
-        .flatMap((period) => realisticDataset[period][gender])
+        .flatMap((period) => namesIn(realisticDataset[period][gender]))
     );
 
     const names = generateNames({
@@ -244,7 +249,7 @@ describe("generateNames (realistic)", () => {
 
   it("pairs a first name and surname from the same region", () => {
     const gender = "male";
-    const validFirstNames = new Set(realisticDataset.japan_21st_century[gender]);
+    const validFirstNames = new Set(namesIn(realisticDataset.japan_21st_century[gender]));
     const validSurnames = new Set(realisticSurnames.japan);
 
     const names = generateNames({
@@ -318,13 +323,14 @@ describe("western_europe_1300_1550 (late medieval spike cell)", () => {
   it("has no duplicate entries in either gender pool", () => {
     const pool = realisticDataset.western_europe_1300_1550;
 
-    expect(new Set(pool.male).size).toBe(pool.male.length);
-    expect(new Set(pool.female).size).toBe(pool.female.length);
+    expect(new Set(namesIn(pool.male)).size).toBe(pool.male.length);
+    expect(new Set(namesIn(pool.female)).size).toBe(pool.female.length);
   });
 
   it("pairs given names with period surnames, not the modern regional pool", () => {
     const periodSurnames = realisticPeriodSurnames.western_europe_1300_1550;
     expect(periodSurnames).toBeDefined();
+    const everySurname = Object.values(periodSurnames!).flat();
 
     const names = generateNames({
       setting: "realistic",
@@ -335,8 +341,47 @@ describe("western_europe_1300_1550 (late medieval spike cell)", () => {
     });
 
     for (const name of names) {
-      expect(periodSurnames).toContain(surnameOf(name));
+      expect(everySurname).toContain(surnameOf(name));
     }
+  });
+
+  it("draws most surnames from the culture of the given name itself", () => {
+    const periodSurnames = realisticPeriodSurnames.western_europe_1300_1550!;
+    const cultureOf = new Map(
+      realisticDataset.western_europe_1300_1550.male.map((entry) => [
+        entry.name,
+        entry.culture,
+      ])
+    );
+
+    let sameCulture = 0;
+    let total = 0;
+
+    for (let batch = 0; batch < 40; batch++) {
+      const names = generateNames({
+        setting: "realistic",
+        gender: "male",
+        count: 10,
+        region: "western_europe",
+        century: "1300_1550",
+      });
+
+      for (const name of names) {
+        const culture = cultureOf.get(firstNameOf(name));
+        if (!culture) continue;
+        total += 1;
+        if (periodSurnames[culture]?.includes(surnameOf(name))) {
+          sameCulture += 1;
+        }
+      }
+    }
+
+    // Five culture blocks, so picking blindly would land on the matching one
+    // roughly 20% of the time. The engine aims for SAME_CULTURE_SURNAME_CHANCE
+    // (0.7) plus incidental hits, so anything above 0.5 proves the pairing is
+    // deliberate rather than accidental.
+    expect(total).toBeGreaterThan(100);
+    expect(sameCulture / total).toBeGreaterThan(0.5);
   });
 
   it("still falls back to the regional surname pool for periods without their own", () => {
@@ -352,6 +397,50 @@ describe("western_europe_1300_1550 (late medieval spike cell)", () => {
 
     for (const name of names) {
       expect(realisticSurnames.usa).toContain(surnameOf(name));
+    }
+  });
+});
+
+describe("culture tagging", () => {
+  it("tags every imported 21st-century name with an ISO country code", () => {
+    const periods = (Object.keys(realisticDataset) as RealisticPeriod[]).filter(
+      (period) => realisticPeriodMeta[period].century === "21st_century"
+    );
+
+    expect(periods).toHaveLength(8);
+
+    for (const period of periods) {
+      for (const gender of ["male", "female"] as const) {
+        for (const entry of realisticDataset[period][gender]) {
+          expect(entry.culture).toMatch(/^[A-Z]{2}$/);
+        }
+      }
+    }
+  });
+
+  it("groups imported surnames by country without losing any", () => {
+    for (const region of Object.keys(realisticSurnames) as (keyof typeof realisticSurnames)[]) {
+      const grouped = Object.values(realisticSurnamesByCulture[region]).flat();
+      expect(grouped).toHaveLength(realisticSurnames[region].length);
+    }
+  });
+
+  it("still fills the batch for countries that have names but no surnames", () => {
+    // central_asia keeps surnames only for KZ, india only for BD/IN/NP — the
+    // rest have to fall back to the regional pool rather than come up empty.
+    for (const region of ["central_asia", "india"] as const) {
+      const names = generateNames({
+        setting: "realistic",
+        gender: "male",
+        count: 10,
+        region,
+        century: "21st_century",
+      });
+
+      expect(names).toHaveLength(10);
+      for (const name of names) {
+        expect(realisticSurnames[region]).toContain(surnameOf(name));
+      }
     }
   });
 });
