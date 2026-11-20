@@ -11,8 +11,13 @@ export type SyllableDataset = Record<Gender, SyllablePool>;
 
 export type RealisticPeriod =
   | "western_europe_600_1100"
+  | "eastern_europe_600_1100"
+  | "western_europe_1100_1300"
+  | "eastern_europe_1100_1300"
   | "western_europe_1300_1550"
   | "eastern_europe_1300_1550"
+  | "western_europe_1550_1800"
+  | "eastern_europe_1550_1800"
   | "western_europe_20th_century"
   | "eastern_europe_20th_century"
   | "usa_20th_century"
@@ -55,7 +60,9 @@ export type RealisticRegion =
 
 export type RealisticCentury =
   | "600_1100"
+  | "1100_1300"
   | "1300_1550"
+  | "1550_1800"
   | "20th_century"
   | "21st_century";
 
@@ -67,7 +74,12 @@ export type RealisticCentury =
  * - `late_medieval` — hereditary surnames exist, titles are period ones.
  * - `modern` — surnames and present-day professional titles.
  */
-export type NameEra = "early_medieval" | "late_medieval" | "modern";
+export type NameEra =
+  | "early_medieval"
+  | "high_medieval"
+  | "late_medieval"
+  | "early_modern"
+  | "modern";
 
 export interface RealisticPeriodMeta {
   region: RealisticRegion;
@@ -89,6 +101,14 @@ export interface PatronymicByname {
    */
   male: { prefix?: string; suffix?: string };
   female: { prefix?: string; suffix?: string };
+  /**
+   * Explicit patronymic per name of the father, for languages where the form
+   * is irregular and plain concatenation produces a non-word. Spanish is the
+   * clear case: Rodrigo gives Rodríguez and Gonzalo gives González, never
+   * Rodrigoez or Gonzaloez. When this is present the byname is drawn from it
+   * and `prefix`/`suffix` are ignored.
+   */
+  forms?: Record<string, string>;
 }
 
 export interface ToponymicByname {

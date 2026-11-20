@@ -30,7 +30,9 @@ const REGIONS: { value: RealisticRegion | ""; label: string }[] = [
 const CENTURIES: { value: RealisticCentury | ""; label: string }[] = [
   { value: "", label: "Any" },
   { value: "600_1100", label: "600–1100" },
+  { value: "1100_1300", label: "1100–1300" },
   { value: "1300_1550", label: "1300–1550" },
+  { value: "1550_1800", label: "1550–1800" },
   { value: "20th_century", label: "20th century" },
   { value: "21st_century", label: "21st century" },
 ];
@@ -72,7 +74,14 @@ export default function Home() {
             <select
               className="rounded-md border border-black/[.08] bg-white px-3 py-2 text-black dark:border-white/[.145] dark:bg-black dark:text-zinc-50"
               value={setting}
-              onChange={(event) => setSetting(event.target.value as Setting)}
+              onChange={(event) => {
+                setSetting(event.target.value as Setting);
+                // Region and century only exist for Realistic, but their
+                // state would otherwise survive a trip through Fantasy and
+                // come back paired with a gender that period cannot serve.
+                setRegion("");
+                setCentury("");
+              }}
             >
               {SETTINGS.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -97,7 +106,13 @@ export default function Home() {
                     <option
                       key={option.value}
                       value={option.value}
-                      disabled={!hasRealisticPeriod(option.value || undefined, century || undefined)}
+                      disabled={
+                        !hasRealisticPeriod(
+                          option.value || undefined,
+                          century || undefined,
+                          gender
+                        )
+                      }
                     >
                       {option.label}
                     </option>
@@ -118,7 +133,13 @@ export default function Home() {
                     <option
                       key={option.value}
                       value={option.value}
-                      disabled={!hasRealisticPeriod(region || undefined, option.value || undefined)}
+                      disabled={
+                        !hasRealisticPeriod(
+                          region || undefined,
+                          option.value || undefined,
+                          gender
+                        )
+                      }
                     >
                       {option.label}
                     </option>
@@ -136,7 +157,20 @@ export default function Home() {
               onChange={(event) => setGender(event.target.value as Gender)}
             >
               {GENDERS.map((option) => (
-                <option key={option.value} value={option.value}>
+                <option
+                  key={option.value}
+                  value={option.value}
+                  // Only the realistic setting has periods that lack a gender:
+                  // the pre-modern ones carry no neutral names.
+                  disabled={
+                    setting === "realistic" &&
+                    !hasRealisticPeriod(
+                      region || undefined,
+                      century || undefined,
+                      option.value
+                    )
+                  }
+                >
                   {option.label}
                 </option>
               ))}

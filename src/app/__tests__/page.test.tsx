@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import Home from "../page";
+import { realisticDataset } from "@/lib/names/datasets/realistic";
+import { fantasyDataset } from "@/lib/names/datasets/fantasy";
+import { fantasyRealNames } from "@/lib/names/datasets/fantasyRealNames";
 
 describe("Home (name generator screen)", () => {
   it("renders all controls with no results yet", () => {
@@ -66,10 +69,20 @@ describe("Home (name generator screen)", () => {
       .getAllByRole("listitem")
       .map((item) => item.textContent);
 
-    // Female fantasy prefixes never overlap with male ones.
-    const maleOnlyPrefixes = ["Ar", "Bal", "Cor", "Dor", "Ivor"];
+    // Checked against the female pools themselves rather than a list of
+    // "male-only prefixes": that list claimed "Ar" was male, but the curated
+    // female pool contains Arima, so the assertion failed at random whenever
+    // that name came up.
+    const femaleFirstNames = new Set([
+      ...fantasyRealNames.female,
+      ...fantasyDataset.female.prefixes.flatMap((prefix) =>
+        fantasyDataset.female.suffixes.map((suffix) => `${prefix}${suffix}`)
+      ),
+    ]);
+
+    expect(names).toHaveLength(5);
     for (const name of names) {
-      expect(maleOnlyPrefixes.some((prefix) => name?.startsWith(prefix))).toBe(false);
+      expect(femaleFirstNames).toContain(name?.split(" ")[0]);
     }
   });
 
@@ -103,16 +116,12 @@ describe("Home (name generator screen)", () => {
       .getAllByRole("listitem")
       .map((item) => item.textContent);
 
-    const usaMaleNames = [
-      "Walter",
-      "Harold",
-      "Frank",
-      "Raymond",
-      "Eugene",
-      "Arthur",
-      "Clarence",
-      "Elmer",
-    ];
+    // Taken from the dataset rather than copied: an inline literal here went
+    // stale the moment the pool grew.
+    const usaMaleNames = realisticDataset.usa_20th_century.male.map(
+      (entry) => entry.name
+    );
+
     for (const name of names) {
       const firstName = name?.split(" ")[0];
       expect(usaMaleNames).toContain(firstName);
@@ -174,5 +183,78 @@ describe("Home (name generator screen)", () => {
     expect(option("Region", "USA").disabled).toBe(true);
     expect(option("Region", "Western Europe").disabled).toBe(false);
     expect(option("Region", "Any").disabled).toBe(false);
+  });
+
+  it("disables the Neutral gender on pre-modern centuries", () => {
+    render(<Home />);
+
+    fireEvent.change(screen.getByLabelText("Setting"), { target: { value: "realistic" } });
+
+    const option = (label: string, text: string) =>
+      within(screen.getByLabelText(label)).getByRole("option", { name: text }) as HTMLOptionElement;
+
+    // Nothing narrowed yet: the modern periods still offer neutral names.
+    expect(option("Gender", "Neutral").disabled).toBe(false);
+
+    fireEvent.change(screen.getByLabelText("Century"), { target: { value: "600_1100" } });
+    expect(option("Gender", "Neutral").disabled).toBe(true);
+    expect(option("Gender", "Male").disabled).toBe(false);
+    expect(option("Gender", "Female").disabled).toBe(false);
+
+    fireEvent.change(screen.getByLabelText("Century"), { target: { value: "1300_1550" } });
+    expect(option("Gender", "Neutral").disabled).toBe(true);
+
+    fireEvent.change(screen.getByLabelText("Century"), { target: { value: "21st_century" } });
+    expect(option("Gender", "Neutral").disabled).toBe(false);
+  });
+
+  it("disables pre-modern centuries once Neutral is chosen", () => {
+    render(<Home />);
+
+    fireEvent.change(screen.getByLabelText("Setting"), { target: { value: "realistic" } });
+    fireEvent.change(screen.getByLabelText("Gender"), { target: { value: "neutral" } });
+
+    const option = (label: string, text: string) =>
+      within(screen.getByLabelText(label)).getByRole("option", { name: text }) as HTMLOptionElement;
+
+    expect(option("Century", "600–1100").disabled).toBe(true);
+    expect(option("Century", "1300–1550").disabled).toBe(true);
+    expect(option("Century", "20th century").disabled).toBe(false);
+    expect(option("Century", "21st century").disabled).toBe(false);
+  });
+
+  it("keeps every gender available for Fantasy", () => {
+    render(<Home />);
+
+    const option = (label: string, text: string) =>
+      within(screen.getByLabelText(label)).getByRole("option", { name: text }) as HTMLOptionElement;
+
+    expect(option("Gender", "Neutral").disabled).toBe(false);
+    expect(option("Gender", "Male").disabled).toBe(false);
+    expect(option("Gender", "Female").disabled).toBe(false);
+  });
+
+  it("clears region and century when the setting changes", () => {
+    // Otherwise they survive a trip through Fantasy and come back paired
+    // with a gender their period cannot serve: pick 600-1100 + Male, switch
+    // to Fantasy, pick Neutral there, come back, and the screen would claim
+    // 600-1100 + Neutral while generating 21st-century names.
+    render(<Home />);
+
+    fireEvent.change(screen.getByLabelText("Setting"), { target: { value: "realistic" } });
+    fireEvent.change(screen.getByLabelText("Century"), { target: { value: "600_1100" } });
+    expect((screen.getByLabelText("Century") as HTMLSelectElement).value).toBe("600_1100");
+
+    fireEvent.change(screen.getByLabelText("Setting"), { target: { value: "fantasy" } });
+    fireEvent.change(screen.getByLabelText("Gender"), { target: { value: "neutral" } });
+    fireEvent.change(screen.getByLabelText("Setting"), { target: { value: "realistic" } });
+
+    expect((screen.getByLabelText("Century") as HTMLSelectElement).value).toBe("");
+    expect((screen.getByLabelText("Region") as HTMLSelectElement).value).toBe("");
+
+    const neutral = within(screen.getByLabelText("Gender")).getByRole("option", {
+      name: "Neutral",
+    }) as HTMLOptionElement;
+    expect(neutral.disabled).toBe(false);
   });
 });
