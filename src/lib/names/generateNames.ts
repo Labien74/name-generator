@@ -54,6 +54,25 @@ function withTitleAndNickname(
   return epithet ? `${withTitle} ${epithet}` : withTitle;
 }
 
+function periodMatches(
+  period: RealisticPeriod,
+  region: RealisticRegion | undefined,
+  century: RealisticCentury | undefined
+): boolean {
+  const meta = realisticPeriodMeta[period];
+  return (!region || meta.region === region) && (!century || meta.century === century);
+}
+
+// Whether any realistic period has data for this region+century pair.
+// Used by the UI to disable filter combinations that would otherwise
+// fall back to the full mix.
+export function hasRealisticPeriod(
+  region: RealisticRegion | undefined,
+  century: RealisticCentury | undefined
+): boolean {
+  return allRealisticPeriods.some((period) => periodMatches(period, region, century));
+}
+
 function resolveRealisticPeriods(
   region: RealisticRegion | undefined,
   century: RealisticCentury | undefined
@@ -62,10 +81,9 @@ function resolveRealisticPeriods(
     return allRealisticPeriods;
   }
 
-  const matching = allRealisticPeriods.filter((period) => {
-    const meta = realisticPeriodMeta[period];
-    return (!region || meta.region === region) && (!century || meta.century === century);
-  });
+  const matching = allRealisticPeriods.filter((period) =>
+    periodMatches(period, region, century)
+  );
 
   // No period matches this region+century combination (e.g. sparse data) —
   // fall back to the full mix rather than returning nothing.
