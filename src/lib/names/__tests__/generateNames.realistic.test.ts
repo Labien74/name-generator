@@ -29,6 +29,7 @@ function surnameOf(fullName: string): string {
 }
 
 const EXPECTED_PERIODS = [
+  "eastern_europe_600_1100",
   "western_europe_600_1100",
   "western_europe_1300_1550",
   "eastern_europe_1300_1550",
@@ -47,7 +48,7 @@ const EXPECTED_PERIODS = [
 ].sort();
 
 describe("realisticDataset", () => {
-  it("covers all 15 sub-periods/regions with names for every gender", () => {
+  it("covers all 16 sub-periods/regions with names for every gender", () => {
     const periods = Object.keys(realisticDataset).sort();
     expect(periods).toEqual(EXPECTED_PERIODS);
 
@@ -604,6 +605,37 @@ describe("titles by era", () => {
 
       for (const name of names) {
         expect(titles.some((title) => name.startsWith(`${title} `))).toBe(true);
+      }
+    }
+  });
+});
+
+describe("pool sizes", () => {
+  // The hand-written cells used to hold eight names per gender, which made a
+  // batch of ten repeat itself. This locks the expansion in: a new period
+  // cannot land as a token sample.
+  const MINIMUM_PER_GENDER = 15;
+
+  it("gives every period a usable pool for both genders", () => {
+    for (const period of Object.keys(realisticDataset) as RealisticPeriod[]) {
+      for (const gender of ["male", "female"] as const) {
+        expect(
+          realisticDataset[period][gender].length,
+          `${period}.${gender} is too small`
+        ).toBeGreaterThanOrEqual(MINIMUM_PER_GENDER);
+      }
+    }
+  });
+
+  it("tags every name in the pre-surname periods with a culture", () => {
+    // Without a culture there is no byname rule to apply, so such a name
+    // would silently fall back to a modern surname.
+    for (const period of ["western_europe_600_1100", "eastern_europe_600_1100"] as const) {
+      for (const gender of ["male", "female"] as const) {
+        for (const entry of realisticDataset[period][gender]) {
+          expect(entry.culture, `${entry.name} in ${period}`).toBeDefined();
+          expect(realisticBynames[period]![entry.culture!]).toBeDefined();
+        }
       }
     }
   });

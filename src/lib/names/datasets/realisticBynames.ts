@@ -153,4 +153,95 @@ export const realisticBynames: RealisticBynames = {
       },
     ],
   },
+
+  eastern_europe_600_1100: {
+    // East Slavic. The -ovich / -ovna patronymic is the form that survived
+    // into the modern Russian middle name.
+    rus: [
+      {
+        kind: "patronymic",
+        male: { suffix: "ovich" },
+        female: { suffix: "ovna" },
+      },
+      {
+        kind: "toponymic",
+        particle: "of",
+        places: [
+          "Kiev",
+          "Novgorod",
+          "Chernigov",
+          "Polotsk",
+          "Smolensk",
+          "Pereyaslavl",
+          "Rostov",
+          "Tmutarakan",
+          "Galich",
+          "Vladimir",
+        ],
+      },
+      {
+        kind: "descriptive",
+        particle: "the",
+        epithets: [
+          "Wise",
+          "Bold",
+          "Great",
+          "Blessed",
+          "Red",
+          "Elder",
+          "Younger",
+          "Lame",
+          "Proud",
+        ],
+      },
+    ],
+
+    poland: [
+      {
+        kind: "patronymic",
+        male: { suffix: "owic" },
+        female: { suffix: "owna" },
+      },
+      {
+        kind: "toponymic",
+        particle: "z",
+        places: [
+          "Krakowa",
+          "Gniezna",
+          "Poznania",
+          "Plocka",
+          "Wroclawia",
+          "Sandomierza",
+          "Leczycy",
+          "Kalisza",
+        ],
+      },
+    ],
+
+    bohemia: [
+      {
+        kind: "patronymic",
+        male: { suffix: "ovic" },
+        female: { suffix: "ova" },
+      },
+      {
+        kind: "toponymic",
+        particle: "z",
+        places: ["Prahy", "Brna", "Olomouce", "Plzne", "Zatce", "Libice"],
+      },
+    ],
+
+    serbia: [
+      {
+        kind: "patronymic",
+        male: { suffix: "ovic" },
+        female: { suffix: "ova" },
+      },
+      {
+        kind: "descriptive",
+        particle: "the",
+        epithets: ["Grey", "Bold", "Silent", "Elder", "Younger", "Stern"],
+      },
+    ],
+  },
 };

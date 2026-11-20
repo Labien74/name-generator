@@ -11,6 +11,7 @@ export type SyllableDataset = Record<Gender, SyllablePool>;
 
 export type RealisticPeriod =
   | "western_europe_600_1100"
+  | "eastern_europe_600_1100"
   | "western_europe_1300_1550"
   | "eastern_europe_1300_1550"
   | "western_europe_20th_century"
