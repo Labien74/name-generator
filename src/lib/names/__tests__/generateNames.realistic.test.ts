@@ -645,7 +645,9 @@ describe("pool sizes", () => {
   it("tags every name in the pre-surname periods with a culture", () => {
     // Without a culture there is no byname rule to apply, so such a name
     // would silently fall back to a modern surname.
-    for (const period of ["western_europe_600_1100", "eastern_europe_600_1100"] as const) {
+    // Every period that builds bynames, not a hardcoded pair: the list grew
+    // from two to four and the guard has to grow with it.
+    for (const period of Object.keys(realisticBynames) as RealisticPeriod[]) {
       for (const gender of ["male", "female"] as const) {
         for (const entry of realisticDataset[period][gender]) {
           expect(entry.culture, `${entry.name} in ${period}`).toBeDefined();
