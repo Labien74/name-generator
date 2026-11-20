@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { generateNames } from "@/lib/names/generateNames";
+import { generateNames, hasRealisticPeriod } from "@/lib/names/generateNames";
 import type { Gender, RealisticCentury, RealisticRegion, Setting } from "@/lib/names/types";
 
 const SETTINGS: { value: Setting; label: string }[] = [
@@ -93,7 +93,11 @@ export default function Home() {
                   }
                 >
                   {REGIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
+                    <option
+                      key={option.value}
+                      value={option.value}
+                      disabled={!hasRealisticPeriod(option.value || undefined, century || undefined)}
+                    >
                       {option.label}
                     </option>
                   ))}
@@ -110,7 +114,11 @@ export default function Home() {
                   }
                 >
                   {CENTURIES.map((option) => (
-                    <option key={option.value} value={option.value}>
+                    <option
+                      key={option.value}
+                      value={option.value}
+                      disabled={!hasRealisticPeriod(region || undefined, option.value || undefined)}
+                    >
                       {option.label}
                     </option>
                   ))}
