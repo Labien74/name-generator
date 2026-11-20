@@ -10,8 +10,8 @@ export interface SyllablePool {
 export type SyllableDataset = Record<Gender, SyllablePool>;
 
 export type RealisticPeriod =
-  | "western_europe_1200_1600"
-  | "eastern_europe_1200_1600"
+  | "western_europe_1300_1550"
+  | "eastern_europe_1300_1550"
   | "western_europe_20th_century"
   | "eastern_europe_20th_century"
   | "usa_20th_century"
@@ -37,7 +37,7 @@ export type RealisticRegion =
   | "japan"
   | "china";
 
-export type RealisticCentury = "1200_1600" | "20th_century" | "21st_century";
+export type RealisticCentury = "1300_1550" | "20th_century" | "21st_century";
 
 export interface RealisticPeriodMeta {
   region: RealisticRegion;

@@ -4,6 +4,7 @@ import { fantasySurnames } from "./datasets/fantasySurnames";
 import { fantasyTitles, fantasyEpithets } from "./datasets/fantasyTitlesAndEpithets";
 import { realisticDataset, realisticPeriodMeta } from "./datasets/realistic";
 import { realisticSurnames } from "./datasets/realisticSurnames";
+import { realisticPeriodSurnames } from "./datasets/realisticPeriodSurnames";
 import { realisticTitles, realisticEpithets } from "./datasets/realisticTitlesAndEpithets";
 import type {
   Gender,
@@ -95,10 +96,14 @@ function buildRealisticName(
   const period = pickRandom(periods);
   const firstName = pickRandom(realisticDataset[period][gender]);
 
-  // Surnames aren't split by century, so pair with the first name's own
-  // region (not the requested filter) — always consistent even when the
-  // region filter is "any" and periods span multiple regions.
-  const surname = pickRandom(realisticSurnames[realisticPeriodMeta[period].region]);
+  // A period with its own surname pool uses it; the rest fall back to the
+  // region-wide pool, which isn't split by century. Either way the surname
+  // follows the first name's own period — not the requested filter — so it
+  // stays consistent even when the filter is "any" and the drawn periods
+  // span several regions.
+  const surname = pickRandom(
+    realisticPeriodSurnames[period] ?? realisticSurnames[realisticPeriodMeta[period].region]
+  );
   const baseName = `${firstName} ${surname}`;
 
   return withTitleAndNickname(
