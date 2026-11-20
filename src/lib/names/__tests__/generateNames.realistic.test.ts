@@ -10,7 +10,7 @@ import {
 } from "../datasets/realisticTitlesAndEpithets";
 
 const allRealisticTitles = Object.values(realisticTitlesByEra).flat();
-import type { CulturedName, RealisticPeriod } from "../types";
+import type { CulturedName, RealisticCentury, RealisticPeriod } from "../types";
 
 // Surnames can themselves contain spaces (e.g. "De Los Santos"), so split
 // only on the first space to separate the first name from the surname.
@@ -29,6 +29,8 @@ function surnameOf(fullName: string): string {
 }
 
 const EXPECTED_PERIODS = [
+  "western_europe_1550_1800",
+  "eastern_europe_1550_1800",
   "western_europe_1100_1300",
   "eastern_europe_1100_1300",
   "eastern_europe_600_1100",
@@ -50,7 +52,7 @@ const EXPECTED_PERIODS = [
 ].sort();
 
 describe("realisticDataset", () => {
-  it("covers all 18 sub-periods/regions with gendered names", () => {
+  it("covers all 20 sub-periods/regions with gendered names", () => {
     const periods = Object.keys(realisticDataset).sort();
     expect(periods).toEqual(EXPECTED_PERIODS);
 
@@ -788,5 +790,90 @@ describe("every pre-surname period", () => {
     for (const name of names) {
       expect(realisticSurnames[region]).not.toContain(surnameOf(name));
     }
+  });
+});
+
+describe("1550-1800 (early modern)", () => {
+  it("uses hereditary surnames, not bynames", () => {
+    expect(realisticBynames.western_europe_1550_1800).toBeUndefined();
+    expect(realisticBynames.eastern_europe_1550_1800).toBeUndefined();
+
+    for (const region of ["western_europe", "eastern_europe"] as const) {
+      const names = generateNames({
+        setting: "realistic",
+        gender: "male",
+        count: 10,
+        region,
+        century: "1550_1800",
+      });
+
+      expect(names).toHaveLength(10);
+      for (const name of names) {
+        expect(realisticSurnames[region]).toContain(surnameOf(name));
+      }
+    }
+  });
+
+  it("carries both halves of the confessional split", () => {
+    const pool = realisticDataset.western_europe_1550_1800;
+    const male = namesIn(pool.male);
+    const female = namesIn(pool.female);
+
+    // Protestant: Old Testament and virtue names, the reason 1550 is a
+    // boundary at all.
+    expect(male).toEqual(expect.arrayContaining(["Ezekiel", "Obadiah"]));
+    expect(female).toEqual(
+      expect.arrayContaining(["Patience", "Prudence", "Mercy"])
+    );
+
+    // Catholic: the saints carry on.
+    expect(male).toEqual(expect.arrayContaining(["Giuseppe", "José"]));
+    expect(female).toEqual(expect.arrayContaining(["Josefa", "Marie"]));
+  });
+
+  it("gets early modern titles rather than medieval or modern ones", () => {
+    const names = generateNames({
+      setting: "realistic",
+      gender: "male",
+      count: 10,
+      region: "western_europe",
+      century: "1550_1800",
+      includeTitle: true,
+    });
+
+    for (const name of names) {
+      expect(
+        realisticTitlesByEra.early_modern.some((title) =>
+          name.startsWith(`${title} `)
+        )
+      ).toBe(true);
+    }
+  });
+});
+
+describe("the European period grid", () => {
+  it("is complete: every historical century has a western and an eastern cell", () => {
+    const historical = ["600_1100", "1100_1300", "1300_1550", "1550_1800"] as const;
+
+    for (const century of historical) {
+      for (const region of ["western_europe", "eastern_europe"] as const) {
+        expect(
+          hasRealisticPeriod(region, century, "male"),
+          `${region} ${century}`
+        ).toBe(true);
+      }
+    }
+  });
+
+  it("gives each historical century its own era", () => {
+    const eraOf = (century: RealisticCentury) =>
+      (Object.keys(realisticDataset) as RealisticPeriod[])
+        .filter((period) => realisticPeriodMeta[period].century === century)
+        .map((period) => realisticPeriodMeta[period].era);
+
+    expect(eraOf("600_1100")).toEqual(["early_medieval", "early_medieval"]);
+    expect(eraOf("1100_1300")).toEqual(["high_medieval", "high_medieval"]);
+    expect(eraOf("1300_1550")).toEqual(["late_medieval", "late_medieval"]);
+    expect(eraOf("1550_1800")).toEqual(["early_modern", "early_modern"]);
   });
 });

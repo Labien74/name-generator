@@ -34,6 +34,7 @@ function untagged(names: string[]): CulturedName[] {
 
 const EARLY = "early_medieval" as const;
 const HIGH = "high_medieval" as const;
+const EARLY_MODERN = "early_modern" as const;
 const LATE = "late_medieval" as const;
 const MODERN = "modern" as const;
 
@@ -44,6 +45,8 @@ export const realisticPeriodMeta: Record<RealisticPeriod, RealisticPeriodMeta> =
   eastern_europe_1100_1300: { region: "eastern_europe", century: "1100_1300", era: HIGH },
   western_europe_1300_1550: { region: "western_europe", century: "1300_1550", era: LATE },
   eastern_europe_1300_1550: { region: "eastern_europe", century: "1300_1550", era: LATE },
+  western_europe_1550_1800: { region: "western_europe", century: "1550_1800", era: EARLY_MODERN },
+  eastern_europe_1550_1800: { region: "eastern_europe", century: "1550_1800", era: EARLY_MODERN },
   western_europe_20th_century: { region: "western_europe", century: "20th_century", era: MODERN },
   eastern_europe_20th_century: { region: "eastern_europe", century: "20th_century", era: MODERN },
   usa_20th_century: { region: "usa", century: "20th_century", era: MODERN },
@@ -366,6 +369,119 @@ export const realisticDataset: RealisticDataset = {
       ]),
       ...tag("hungary", [
         "Erzsebet", "Margit", "Ilona", "Katalin", "Borbala", "Zsofia",
+      ]),
+    ],
+    neutral: [],
+  },
+
+  // Early modern. The boundary at ~1550 is the Reformation splitting the
+  // name stock along confessional lines: Protestant areas go to the Old
+  // Testament and to virtue names (Ezekiel, Obadiah, Patience, Mercy), while
+  // Catholic ones stay with the saints (Giuseppe, Josefa, Marie). Both halves
+  // are in these pools, which is the whole reason this period is separate
+  // from 1300-1550.
+  //
+  // Cultures are ISO codes rather than slugs here on purpose: surnames were
+  // hereditary and settled by now, and the common ones are largely the same
+  // today, so the region-wide pools are a fair proxy. That is not true of the
+  // medieval cells, which is why those carry their own surname lists.
+  western_europe_1550_1800: {
+    male: [
+      ...tag("GB", [
+        "John", "William", "Thomas", "Richard", "Edward", "Henry", "James",
+        "Robert", "Samuel", "Josiah", "Ezekiel", "Obadiah", "Nathaniel",
+        "Jeremiah", "Abraham", "Caleb", "Increase", "Zachariah", "Benjamin",
+        "Elias",
+      ]),
+      ...tag("FR", [
+        "Jean", "Pierre", "Louis", "Charles", "Antoine", "François",
+        "Nicolas", "Jacques", "Claude", "Michel", "Étienne", "Gabriel",
+        "Honoré", "Barthélemy",
+      ]),
+      ...tag("DE", [
+        "Johann", "Georg", "Christoph", "Friedrich", "Wilhelm", "Gottlieb",
+        "Christian", "Andreas", "Jacob", "Martin", "Caspar", "Balthasar",
+        "Ehrenfried", "Traugott",
+      ]),
+      ...tag("IT", [
+        "Giuseppe", "Francesco", "Antonio", "Domenico", "Giovanni", "Pietro",
+        "Vincenzo", "Carlo", "Luigi", "Angelo", "Pasquale", "Gaetano",
+      ]),
+      ...tag("ES", [
+        "José", "Juan", "Manuel", "Francisco", "Pedro", "Miguel", "Diego",
+        "Blas", "Baltasar", "Nicolás", "Ventura", "Lorenzo",
+      ]),
+      ...tag("NL", [
+        "Jan", "Pieter", "Cornelis", "Dirk", "Hendrik", "Willem", "Gerrit",
+        "Klaas", "Adriaan", "Teunis",
+      ]),
+    ],
+    female: [
+      ...tag("GB", [
+        "Mary", "Elizabeth", "Anne", "Sarah", "Jane", "Margaret", "Rebecca",
+        "Hannah", "Patience", "Prudence", "Mercy", "Charity", "Temperance",
+        "Grace", "Dorcas", "Abigail", "Deborah", "Priscilla",
+      ]),
+      ...tag("FR", [
+        "Marie", "Jeanne", "Anne", "Catherine", "Marguerite", "Françoise",
+        "Madeleine", "Geneviève", "Louise", "Perrine", "Renée", "Suzanne",
+      ]),
+      ...tag("DE", [
+        "Dorothea", "Sophie", "Margaretha", "Catharina", "Elisabeth",
+        "Barbara", "Regina", "Magdalena", "Christiane", "Juliane", "Eleonore",
+        "Sybilla",
+      ]),
+      ...tag("IT", [
+        "Rosa", "Angela", "Teresa", "Caterina", "Lucia", "Domenica",
+        "Carmela", "Grazia", "Agnese", "Veronica",
+      ]),
+      ...tag("ES", [
+        "Josefa", "Francisca", "Isabel", "Catalina", "Manuela", "Rosalía",
+        "Dominga", "Nicolasa", "Tomasa", "Bernarda",
+      ]),
+      ...tag("NL", [
+        "Maartje", "Geertruida", "Aaltje", "Neeltje", "Trijntje", "Grietje",
+        "Jannetje", "Willemina",
+      ]),
+    ],
+    neutral: [],
+  },
+
+  eastern_europe_1550_1800: {
+    male: [
+      ...tag("PL", [
+        "Jan", "Stanislaw", "Wojciech", "Kazimierz", "Franciszek", "Jozef",
+        "Michal", "Marcin", "Tomasz", "Szymon", "Walenty", "Ignacy",
+      ]),
+      ...tag("RU", [
+        "Ivan", "Pyotr", "Vasily", "Fyodor", "Grigory", "Afanasy", "Kuzma",
+        "Timofey", "Nikifor", "Yakov", "Prokhor", "Sidor",
+      ]),
+      ...tag("CZ", [
+        "Vaclav", "Jiri", "Matej", "Pavel", "Jakub", "Frantisek", "Vojtech",
+        "Simon", "Havel", "Tobias",
+      ]),
+      ...tag("HU", [
+        "Istvan", "Janos", "Ferenc", "Mihaly", "Andras", "Gyorgy", "Peter",
+        "Pal", "Balazs", "Gergely",
+      ]),
+    ],
+    female: [
+      ...tag("PL", [
+        "Marianna", "Katarzyna", "Agnieszka", "Zofia", "Jadwiga",
+        "Franciszka", "Salomea", "Rozalia", "Petronela", "Teresa",
+      ]),
+      ...tag("RU", [
+        "Avdotya", "Praskovya", "Matryona", "Agafya", "Marfa", "Ustinya",
+        "Glikeria", "Fedosya", "Akulina", "Pelageya",
+      ]),
+      ...tag("CZ", [
+        "Dorota", "Katerina", "Veronika", "Magdalena", "Ludmila", "Rozina",
+        "Apolena", "Terezie",
+      ]),
+      ...tag("HU", [
+        "Erzsebet", "Katalin", "Judit", "Zsuzsanna", "Borbala", "Ilona",
+        "Agota", "Orsolya",
       ]),
     ],
     neutral: [],
