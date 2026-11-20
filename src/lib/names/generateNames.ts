@@ -171,6 +171,13 @@ function applyByname(
     return `${rule.particle} ${pickRandom(rule.epithets)}`;
   }
 
+  // Irregular languages list their forms explicitly rather than having them
+  // concatenated.
+  if (rule.forms) {
+    const forms = Object.values(rule.forms);
+    return forms.length > 0 ? pickRandom(forms) : undefined;
+  }
+
   // Patronymic: built from a male given name of the same culture, which is
   // why these multiply instead of needing their own word list.
   const fathers = realisticDataset[period].male.filter(

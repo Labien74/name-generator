@@ -302,13 +302,28 @@ export const realisticBynames: RealisticBynames = {
     ],
 
     iberia: [
-      // The -ez patronymic: Rodrigo gives Rodriguez, Fernando gives
-      // Fernandez. It is the same form for sons and daughters, and it is
-      // exactly this byname that froze into the modern Spanish surname.
+      // The -ez patronymic, the byname that froze into the modern Spanish
+      // surname. The same form serves sons and daughters, but it is not a
+      // plain suffix: the stem changes, so these are listed explicitly.
+      // Concatenating would give "Rodrigoez" and "Gonzaloez", which are not
+      // words in any language.
       {
         kind: "patronymic",
         male: { suffix: "ez" },
         female: { suffix: "ez" },
+        forms: {
+          Rodrigo: "Rodríguez",
+          Diego: "Díaz",
+          Fernando: "Fernández",
+          Sancho: "Sánchez",
+          García: "Garcés",
+          Gonzalo: "González",
+          Ramiro: "Ramírez",
+          Bermudo: "Bermúdez",
+          Nuño: "Núñez",
+          Pelayo: "Peláez",
+          Ordoño: "Ordóñez",
+        },
       },
       {
         kind: "toponymic",

@@ -494,6 +494,8 @@ describe("western_europe_600_1100 (pre-surname era)", () => {
         for (const place of rule.places) out.add(`${rule.particle} ${place}`);
       } else if (rule.kind === "descriptive") {
         for (const epithet of rule.epithets) out.add(`${rule.particle} ${epithet}`);
+      } else if (rule.forms) {
+        for (const form of Object.values(rule.forms)) out.add(form);
       } else {
         const { prefix, suffix } = gender === "female" ? rule.female : rule.male;
         for (const father of fathers) {
@@ -736,6 +738,8 @@ describe("every pre-surname period", () => {
         for (const place of rule.places) out.add(`${rule.particle} ${place}`);
       } else if (rule.kind === "descriptive") {
         for (const epithet of rule.epithets) out.add(`${rule.particle} ${epithet}`);
+      } else if (rule.forms) {
+        for (const form of Object.values(rule.forms)) out.add(form);
       } else {
         const { prefix, suffix } = gender === "female" ? rule.female : rule.male;
         for (const father of fathers) {
@@ -778,21 +782,13 @@ describe("every pre-surname period", () => {
     }
   });
 
-  it.each(bynamePeriods)("never uses a modern surname in %s", (period) => {
-    const { region, century } = realisticPeriodMeta[period];
-
-    const names = generateNames({
-      setting: "realistic",
-      gender: "male",
-      count: 10,
-      region,
-      century,
-    });
-
-    for (const name of names) {
-      expect(realisticSurnames[region]).not.toContain(surnameOf(name));
-    }
-  });
+  // There used to be a test here asserting that a pre-surname period never
+  // produces a string from the modern regional surname pool. It encoded a
+  // false assumption: the Spanish -ez patronymic froze into the modern
+  // Spanish surname, so "Gonzalez" is legitimately both a 12th-century
+  // byname and a present-day surname. The overlap is the historical point,
+  // not a leak. The preceding test already covers the real concern, because
+  // a surname that leaked in would not be in the set of possible bynames.
 });
 
 describe("1550-1800 (early modern)", () => {
@@ -877,5 +873,48 @@ describe("the European period grid", () => {
     expect(eraOf("1100_1300")).toEqual(["high_medieval", "high_medieval"]);
     expect(eraOf("1300_1550")).toEqual(["late_medieval", "late_medieval"]);
     expect(eraOf("1550_1800")).toEqual(["early_modern", "early_modern"]);
+  });
+});
+
+describe("irregular patronymics", () => {
+  it("never concatenates the Spanish -ez patronymic", () => {
+    const iberian = realisticBynames.western_europe_1100_1300!.iberia;
+    const patronymic = iberian.find((rule) => rule.kind === "patronymic");
+
+    expect(patronymic).toBeDefined();
+    expect(patronymic!.kind).toBe("patronymic");
+    const forms = (patronymic as { forms?: Record<string, string> }).forms;
+    expect(forms).toBeDefined();
+
+    // The real forms change the stem, so the father name is never simply
+    // suffixed: Rodrigo gives Rodriguez, not Rodrigoez.
+    for (const [father, form] of Object.entries(forms!)) {
+      expect(form).not.toBe(`${father}ez`);
+    }
+    expect(Object.values(forms!)).toEqual(
+      expect.arrayContaining(["Rodríguez", "González", "Díaz"])
+    );
+  });
+
+  it("produces no concatenated form through the generator", () => {
+    const fathers = realisticDataset.western_europe_1100_1300.male
+      .filter((entry) => entry.culture === "iberia")
+      .map((entry) => entry.name);
+
+    for (let batch = 0; batch < 20; batch++) {
+      const names = generateNames({
+        setting: "realistic",
+        gender: "male",
+        count: 10,
+        region: "western_europe",
+        century: "1100_1300",
+      });
+
+      for (const name of names) {
+        for (const father of fathers) {
+          expect(surnameOf(name)).not.toBe(`${father}ez`);
+        }
+      }
+    }
   });
 });

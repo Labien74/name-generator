@@ -101,6 +101,14 @@ export interface PatronymicByname {
    */
   male: { prefix?: string; suffix?: string };
   female: { prefix?: string; suffix?: string };
+  /**
+   * Explicit patronymic per name of the father, for languages where the form
+   * is irregular and plain concatenation produces a non-word. Spanish is the
+   * clear case: Rodrigo gives Rodríguez and Gonzalo gives González, never
+   * Rodrigoez or Gonzaloez. When this is present the byname is drawn from it
+   * and `prefix`/`suffix` are ignored.
+   */
+  forms?: Record<string, string>;
 }
 
 export interface ToponymicByname {

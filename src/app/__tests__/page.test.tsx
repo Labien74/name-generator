@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import Home from "../page";
 import { realisticDataset } from "@/lib/names/datasets/realistic";
+import { fantasyDataset } from "@/lib/names/datasets/fantasy";
+import { fantasyRealNames } from "@/lib/names/datasets/fantasyRealNames";
 
 describe("Home (name generator screen)", () => {
   it("renders all controls with no results yet", () => {
@@ -67,10 +69,20 @@ describe("Home (name generator screen)", () => {
       .getAllByRole("listitem")
       .map((item) => item.textContent);
 
-    // Female fantasy prefixes never overlap with male ones.
-    const maleOnlyPrefixes = ["Ar", "Bal", "Cor", "Dor", "Ivor"];
+    // Checked against the female pools themselves rather than a list of
+    // "male-only prefixes": that list claimed "Ar" was male, but the curated
+    // female pool contains Arima, so the assertion failed at random whenever
+    // that name came up.
+    const femaleFirstNames = new Set([
+      ...fantasyRealNames.female,
+      ...fantasyDataset.female.prefixes.flatMap((prefix) =>
+        fantasyDataset.female.suffixes.map((suffix) => `${prefix}${suffix}`)
+      ),
+    ]);
+
+    expect(names).toHaveLength(5);
     for (const name of names) {
-      expect(maleOnlyPrefixes.some((prefix) => name?.startsWith(prefix))).toBe(false);
+      expect(femaleFirstNames).toContain(name?.split(" ")[0]);
     }
   });
 
