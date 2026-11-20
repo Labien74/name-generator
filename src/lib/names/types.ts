@@ -12,6 +12,8 @@ export type SyllableDataset = Record<Gender, SyllablePool>;
 export type RealisticPeriod =
   | "western_europe_600_1100"
   | "eastern_europe_600_1100"
+  | "western_europe_1100_1300"
+  | "eastern_europe_1100_1300"
   | "western_europe_1300_1550"
   | "eastern_europe_1300_1550"
   | "western_europe_20th_century"
@@ -56,6 +58,7 @@ export type RealisticRegion =
 
 export type RealisticCentury =
   | "600_1100"
+  | "1100_1300"
   | "1300_1550"
   | "20th_century"
   | "21st_century";
@@ -68,7 +71,11 @@ export type RealisticCentury =
  * - `late_medieval` — hereditary surnames exist, titles are period ones.
  * - `modern` — surnames and present-day professional titles.
  */
-export type NameEra = "early_medieval" | "late_medieval" | "modern";
+export type NameEra =
+  | "early_medieval"
+  | "high_medieval"
+  | "late_medieval"
+  | "modern";
 
 export interface RealisticPeriodMeta {
   region: RealisticRegion;

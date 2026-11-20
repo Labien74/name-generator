@@ -33,12 +33,15 @@ function untagged(names: string[]): CulturedName[] {
 }
 
 const EARLY = "early_medieval" as const;
+const HIGH = "high_medieval" as const;
 const LATE = "late_medieval" as const;
 const MODERN = "modern" as const;
 
 export const realisticPeriodMeta: Record<RealisticPeriod, RealisticPeriodMeta> = {
   western_europe_600_1100: { region: "western_europe", century: "600_1100", era: EARLY },
   eastern_europe_600_1100: { region: "eastern_europe", century: "600_1100", era: EARLY },
+  western_europe_1100_1300: { region: "western_europe", century: "1100_1300", era: HIGH },
+  eastern_europe_1100_1300: { region: "eastern_europe", century: "1100_1300", era: HIGH },
   western_europe_1300_1550: { region: "western_europe", century: "1300_1550", era: LATE },
   eastern_europe_1300_1550: { region: "eastern_europe", century: "1300_1550", era: LATE },
   western_europe_20th_century: { region: "western_europe", century: "20th_century", era: MODERN },
@@ -160,6 +163,107 @@ export const realisticDataset: RealisticDataset = {
       ...tag("serbia", [
         "Jelena", "Vojislava", "Radoslava", "Desislava", "Ljubica", "Zorka",
         "Vida", "Mirjana",
+      ]),
+    ],
+    neutral: [],
+  },
+
+  // The transition. Christian saint names are taking over, but the Germanic
+  // and Norman stock has not gone yet — Baldwin, Warin, Fulk and Drogo sit
+  // next to William, Thomas and Nicholas in the same records. Bynames exist
+  // and are common, but they are still personal: they describe you, not your
+  // family, and your children do not inherit them.
+  western_europe_1100_1300: {
+    male: [
+      ...tag("england", [
+        "William", "Robert", "Richard", "Henry", "Hugh", "Walter", "Roger",
+        "Ralph", "Gilbert", "Geoffrey", "Simon", "Adam", "Thomas", "Nicholas",
+        "Peter", "Stephen", "Alan", "Baldwin", "Reginald", "Warin", "Fulk",
+        "Drogo",
+      ]),
+      ...tag("france", [
+        "Guillaume", "Thibaut", "Eudes", "Raoul", "Girart", "Aimery",
+        "Foulques", "Enguerrand", "Gaucher", "Renaud", "Hervé", "Aubry",
+        "Josselin", "Milon", "Guerin", "Garnier",
+      ]),
+      ...tag("german", [
+        "Konrad", "Friedrich", "Otto", "Heinrich", "Albrecht", "Dietrich",
+        "Siegfried", "Gottfried", "Eberhard", "Burkhard", "Reinhard",
+        "Hartmann", "Volkmar", "Wernher",
+      ]),
+      ...tag("italy", [
+        "Giovanni", "Pietro", "Jacopo", "Guido", "Ugo", "Rinaldo",
+        "Bonifacio", "Ranieri", "Alberto", "Gherardo", "Arrigo", "Manfredi",
+      ]),
+      ...tag("iberia", [
+        "Rodrigo", "Diego", "Fernando", "Alfonso", "Sancho", "García",
+        "Gonzalo", "Ramiro", "Bermudo", "Nuño", "Pelayo", "Ordoño",
+      ]),
+    ],
+    female: [
+      ...tag("england", [
+        "Matilda", "Alice", "Joan", "Isabel", "Cecily", "Avice", "Emma",
+        "Margery", "Edith", "Agnes", "Mabel", "Rohese", "Sybil", "Juliana",
+        "Constance", "Eleanor",
+      ]),
+      ...tag("france", [
+        "Aelis", "Mahaut", "Eustachie", "Hodierne", "Beatrix", "Ermengarde",
+        "Sibylle", "Adelaide", "Marguerite", "Clemence", "Isabeau", "Blanche",
+      ]),
+      ...tag("german", [
+        "Mechthild", "Kunigunde", "Adelheid", "Hedwig", "Gertrud", "Irmgard",
+        "Sophia", "Elisabeth", "Jutta", "Richenza",
+      ]),
+      ...tag("italy", [
+        "Bianca", "Caterina", "Margherita", "Imelda", "Berta", "Ghisla",
+        "Adelasia", "Giovanna", "Costanza",
+      ]),
+      ...tag("iberia", [
+        "Urraca", "Berenguela", "Sancha", "Elvira", "Teresa", "Mayor",
+        "Jimena", "Toda", "Leonor",
+      ]),
+    ],
+    neutral: [],
+  },
+
+  // The same transition in the Slavic lands and Hungary.
+  eastern_europe_1100_1300: {
+    male: [
+      ...tag("rus", [
+        "Vsevolod", "Mstislav", "Roman", "Daniil", "Konstantin", "Vasilko",
+        "Rurik", "Andrei", "Yuri", "Mikhail", "Aleksandr", "Fyodor", "Dmitri",
+        "Ingvar",
+      ]),
+      ...tag("poland", [
+        "Boleslaw", "Leszek", "Konrad", "Henryk", "Przemysl", "Wladyslaw",
+        "Mieszko", "Siemowit", "Kazimierz", "Zbigniew", "Wlodzimierz",
+        "Bogusz",
+      ]),
+      ...tag("bohemia", [
+        "Premysl", "Vaclav", "Vladislav", "Sobeslav", "Borivoj", "Zavis",
+        "Vitek", "Jindrich", "Ctibor", "Benes",
+      ]),
+      ...tag("hungary", [
+        "Bela", "Andras", "Kalman", "Imre", "Geza", "Istvan", "Lorand",
+        "Csaba", "Jakab", "Domokos",
+      ]),
+    ],
+    female: [
+      ...tag("rus", [
+        "Evpraksia", "Maria", "Rostislava", "Agafia", "Feodosia", "Anna",
+        "Evfrosinia", "Marina", "Olena", "Vasilisa",
+      ]),
+      ...tag("poland", [
+        "Grzymislawa", "Salomea", "Kinga", "Jolenta", "Wierzchoslawa",
+        "Judyta", "Anastazja", "Eufrozyna", "Konstancja",
+      ]),
+      ...tag("bohemia", [
+        "Konstancie", "Anezka", "Marketa", "Bozena", "Zdislava", "Eliska",
+        "Vratislava", "Bohuslava",
+      ]),
+      ...tag("hungary", [
+        "Erzsebet", "Margit", "Ilona", "Jolan", "Piroska", "Sarolta",
+        "Gizella", "Eufrozina",
       ]),
     ],
     neutral: [],

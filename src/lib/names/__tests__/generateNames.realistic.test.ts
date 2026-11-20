@@ -29,6 +29,8 @@ function surnameOf(fullName: string): string {
 }
 
 const EXPECTED_PERIODS = [
+  "western_europe_1100_1300",
+  "eastern_europe_1100_1300",
   "eastern_europe_600_1100",
   "western_europe_600_1100",
   "western_europe_1300_1550",
@@ -48,7 +50,7 @@ const EXPECTED_PERIODS = [
 ].sort();
 
 describe("realisticDataset", () => {
-  it("covers all 16 sub-periods/regions with gendered names", () => {
+  it("covers all 18 sub-periods/regions with gendered names", () => {
     const periods = Object.keys(realisticDataset).sort();
     expect(periods).toEqual(EXPECTED_PERIODS);
 
@@ -708,5 +710,83 @@ describe("neutral gender on pre-modern periods", () => {
     });
 
     expect(names).toHaveLength(5);
+  });
+});
+
+describe("every pre-surname period", () => {
+  const bynamePeriods = Object.keys(realisticBynames) as RealisticPeriod[];
+
+  // Every byname the rules of one culture can possibly produce, expanded.
+  function possibleBynamesFor(
+    period: RealisticPeriod,
+    culture: string,
+    gender: "male" | "female"
+  ): Set<string> {
+    const fathers = realisticDataset[period].male
+      .filter((entry) => entry.culture === culture)
+      .map((entry) => entry.name);
+
+    const out = new Set<string>();
+    for (const rule of realisticBynames[period]![culture]) {
+      if (rule.kind === "toponymic") {
+        for (const place of rule.places) out.add(`${rule.particle} ${place}`);
+      } else if (rule.kind === "descriptive") {
+        for (const epithet of rule.epithets) out.add(`${rule.particle} ${epithet}`);
+      } else {
+        const { prefix, suffix } = gender === "female" ? rule.female : rule.male;
+        for (const father of fathers) {
+          out.add(`${prefix ? `${prefix} ` : ""}${father}${suffix ?? ""}`);
+        }
+      }
+    }
+    return out;
+  }
+
+  it("covers both early medieval and high medieval periods", () => {
+    expect(bynamePeriods).toHaveLength(4);
+  });
+
+  it.each(bynamePeriods)("builds only valid bynames for %s", (period) => {
+    const { region, century } = realisticPeriodMeta[period];
+
+    for (const gender of ["male", "female"] as const) {
+      const cultures = new Map(
+        realisticDataset[period][gender].map((entry) => [entry.name, entry.culture])
+      );
+
+      const names = generateNames({
+        setting: "realistic",
+        gender,
+        count: 10,
+        region,
+        century,
+      });
+
+      expect(names).toHaveLength(10);
+
+      for (const name of names) {
+        const culture = cultures.get(firstNameOf(name));
+        expect(culture, `${name} in ${period}`).toBeDefined();
+        expect(possibleBynamesFor(period, culture!, gender)).toContain(
+          surnameOf(name)
+        );
+      }
+    }
+  });
+
+  it.each(bynamePeriods)("never uses a modern surname in %s", (period) => {
+    const { region, century } = realisticPeriodMeta[period];
+
+    const names = generateNames({
+      setting: "realistic",
+      gender: "male",
+      count: 10,
+      region,
+      century,
+    });
+
+    for (const name of names) {
+      expect(realisticSurnames[region]).not.toContain(surnameOf(name));
+    }
   });
 });
