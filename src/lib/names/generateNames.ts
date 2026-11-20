@@ -5,8 +5,13 @@ import { fantasyTitles, fantasyEpithets } from "./datasets/fantasyTitlesAndEpith
 import { realisticDataset, realisticPeriodMeta } from "./datasets/realistic";
 import { realisticSurnames, realisticSurnamesByCulture } from "./datasets/realisticSurnames";
 import { realisticPeriodSurnames } from "./datasets/realisticPeriodSurnames";
-import { realisticTitles, realisticEpithets } from "./datasets/realisticTitlesAndEpithets";
+import { realisticBynames } from "./datasets/realisticBynames";
+import {
+  realisticTitlesByEra,
+  realisticEpithets,
+} from "./datasets/realisticTitlesAndEpithets";
 import type {
+  BynameRule,
   Gender,
   RealisticCentury,
   RealisticPeriod,
@@ -49,40 +54,75 @@ function withTitleAndNickname(
   return epithet ? `${withTitle} ${epithet}` : withTitle;
 }
 
+/**
+ * Pre-modern European name stocks were strongly gendered and had no epicene
+ * pool, so those periods carry no "neutral" names at all rather than an
+ * invented placeholder list. A period offers a gender only if it has names
+ * for it.
+ */
+export function periodSupportsGender(
+  period: RealisticPeriod,
+  gender: Gender
+): boolean {
+  return realisticDataset[period][gender].length > 0;
+}
+
 function periodMatches(
   period: RealisticPeriod,
   region: RealisticRegion | undefined,
-  century: RealisticCentury | undefined
+  century: RealisticCentury | undefined,
+  gender: Gender | undefined
 ): boolean {
   const meta = realisticPeriodMeta[period];
-  return (!region || meta.region === region) && (!century || meta.century === century);
+  return (
+    (!region || meta.region === region) &&
+    (!century || meta.century === century) &&
+    (!gender || periodSupportsGender(period, gender))
+  );
 }
 
-// Whether any realistic period has data for this region+century pair.
-// Used by the UI to disable filter combinations that would otherwise
-// fall back to the full mix.
+// Whether any realistic period has data for this region+century+gender
+// combination. Used by the UI to disable filter combinations that would
+// otherwise fall back to the full mix.
 export function hasRealisticPeriod(
   region: RealisticRegion | undefined,
-  century: RealisticCentury | undefined
+  century: RealisticCentury | undefined,
+  gender?: Gender
 ): boolean {
-  return allRealisticPeriods.some((period) => periodMatches(period, region, century));
+  return allRealisticPeriods.some((period) =>
+    periodMatches(period, region, century, gender)
+  );
 }
 
 function resolveRealisticPeriods(
   region: RealisticRegion | undefined,
-  century: RealisticCentury | undefined
+  century: RealisticCentury | undefined,
+  gender: Gender
 ): RealisticPeriod[] {
-  if (!region && !century) {
-    return allRealisticPeriods;
-  }
-
-  const matching = allRealisticPeriods.filter((period) =>
-    periodMatches(period, region, century)
+  const withGender = allRealisticPeriods.filter((period) =>
+    periodSupportsGender(period, gender)
   );
 
-  // No period matches this region+century combination (e.g. sparse data) —
-  // fall back to the full mix rather than returning nothing.
-  return matching.length > 0 ? matching : allRealisticPeriods;
+  // Everything below assumes at least one period can serve the gender. If a
+  // pool is ever emptied and that stops being true, fail with a readable
+  // message instead of letting pickRandom hand back undefined and blowing up
+  // one line later on realisticDataset[undefined].
+  if (withGender.length === 0) {
+    throw new Error(`No realistic period has names for gender "${gender}"`);
+  }
+
+  if (!region && !century) {
+    return withGender;
+  }
+
+  const matching = withGender.filter((period) =>
+    periodMatches(period, region, century, gender)
+  );
+
+  // No period matches this combination (e.g. sparse data, or "neutral" on a
+  // pre-modern century) — fall back to the full mix for that gender rather
+  // than returning nothing.
+  return matching.length > 0 ? matching : withGender;
 }
 
 // How often the surname is drawn from the given name's own culture rather
@@ -118,6 +158,61 @@ function surnamePoolFor(
   return ownPool?.length ? ownPool : widePool;
 }
 
+function applyByname(
+  rule: BynameRule,
+  period: RealisticPeriod,
+  culture: string,
+  gender: Gender
+): string | undefined {
+  if (rule.kind === "toponymic") {
+    return `${rule.particle} ${pickRandom(rule.places)}`;
+  }
+  if (rule.kind === "descriptive") {
+    return `${rule.particle} ${pickRandom(rule.epithets)}`;
+  }
+
+  // Irregular languages list their forms explicitly rather than having them
+  // concatenated.
+  if (rule.forms) {
+    const forms = Object.values(rule.forms);
+    return forms.length > 0 ? pickRandom(forms) : undefined;
+  }
+
+  // Patronymic: built from a male given name of the same culture, which is
+  // why these multiply instead of needing their own word list.
+  const fathers = realisticDataset[period].male.filter(
+    (entry) => entry.culture === culture
+  );
+  if (fathers.length === 0) {
+    return undefined;
+  }
+
+  const father = pickRandom(fathers).name;
+  const { prefix, suffix } = gender === "female" ? rule.female : rule.male;
+  return `${prefix ? `${prefix} ` : ""}${father}${suffix ?? ""}`;
+}
+
+/**
+ * The second element of a name in a period that predates surnames. Returns
+ * the text plus whether it was a descriptive epithet, because the optional
+ * nickname is the same shape and stacking them reads badly ("the Red the
+ * Wise").
+ */
+function buildByname(
+  period: RealisticPeriod,
+  culture: string | undefined,
+  gender: Gender
+): { text: string; isDescriptive: boolean } | undefined {
+  const rules = culture ? realisticBynames[period]?.[culture] : undefined;
+  if (!rules?.length) {
+    return undefined;
+  }
+
+  const rule = pickRandom(rules);
+  const text = applyByname(rule, period, culture!, gender);
+  return text ? { text, isDescriptive: rule.kind === "descriptive" } : undefined;
+}
+
 function buildRealisticName(
   gender: Gender,
   region: RealisticRegion | undefined,
@@ -125,17 +220,29 @@ function buildRealisticName(
   includeTitle: boolean,
   includeNickname: boolean
 ): string {
-  const periods = resolveRealisticPeriods(region, century);
+  const periods = resolveRealisticPeriods(region, century, gender);
   const period = pickRandom(periods);
   const firstName = pickRandom(realisticDataset[period][gender]);
 
-  const surname = pickRandom(surnamePoolFor(period, firstName.culture));
-  const baseName = `${firstName.name} ${surname}`;
+  // Periods listed in realisticBynames have no hereditary surnames, so the
+  // second element is a byname instead. A culture with no rules there (the
+  // untagged placeholder names) still falls back to a surname.
+  const byname = realisticBynames[period]
+    ? buildByname(period, firstName.culture, gender)
+    : undefined;
+
+  const secondElement =
+    byname?.text ?? pickRandom(surnamePoolFor(period, firstName.culture));
+  const baseName = `${firstName.name} ${secondElement}`;
 
   return withTitleAndNickname(
     baseName,
-    includeTitle ? pickRandom(realisticTitles) : undefined,
-    includeNickname ? pickRandom(realisticEpithets) : undefined
+    includeTitle
+      ? pickRandom(realisticTitlesByEra[realisticPeriodMeta[period].era])
+      : undefined,
+    includeNickname && !byname?.isDescriptive
+      ? pickRandom(realisticEpithets)
+      : undefined
   );
 }
 

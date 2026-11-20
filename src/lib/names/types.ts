@@ -10,8 +10,14 @@ export interface SyllablePool {
 export type SyllableDataset = Record<Gender, SyllablePool>;
 
 export type RealisticPeriod =
+  | "western_europe_600_1100"
+  | "eastern_europe_600_1100"
+  | "western_europe_1100_1300"
+  | "eastern_europe_1100_1300"
   | "western_europe_1300_1550"
   | "eastern_europe_1300_1550"
+  | "western_europe_1550_1800"
+  | "eastern_europe_1550_1800"
   | "western_europe_20th_century"
   | "eastern_europe_20th_century"
   | "usa_20th_century"
@@ -52,9 +58,73 @@ export type RealisticRegion =
   | "japan"
   | "china";
 
-export type RealisticCentury = "1300_1550" | "20th_century" | "21st_century";
+export type RealisticCentury =
+  | "600_1100"
+  | "1100_1300"
+  | "1300_1550"
+  | "1550_1800"
+  | "20th_century"
+  | "21st_century";
+
+/**
+ * Which name formula and which titles a period uses.
+ *
+ * - `early_medieval` — no hereditary surnames yet. The second element of a
+ *   name is a byname: a patronymic, a place, or a descriptive epithet.
+ * - `late_medieval` — hereditary surnames exist, titles are period ones.
+ * - `modern` — surnames and present-day professional titles.
+ */
+export type NameEra =
+  | "early_medieval"
+  | "high_medieval"
+  | "late_medieval"
+  | "early_modern"
+  | "modern";
 
 export interface RealisticPeriodMeta {
   region: RealisticRegion;
   century: RealisticCentury;
+  era: NameEra;
 }
+
+/**
+ * How a byname is built for one culture in a period that has no hereditary
+ * surnames. A culture usually offers several rules and one is drawn per name.
+ */
+export interface PatronymicByname {
+  kind: "patronymic";
+  /**
+   * How the name of the father is turned into a patronymic, per gender of the
+   * bearer: either wrapped in a particle ("mac Niall") or suffixed
+   * ("Haraldsson"). No morphology is applied to the name of the father — see
+   * data-import/README.md for that approximation.
+   */
+  male: { prefix?: string; suffix?: string };
+  female: { prefix?: string; suffix?: string };
+  /**
+   * Explicit patronymic per name of the father, for languages where the form
+   * is irregular and plain concatenation produces a non-word. Spanish is the
+   * clear case: Rodrigo gives Rodríguez and Gonzalo gives González, never
+   * Rodrigoez or Gonzaloez. When this is present the byname is drawn from it
+   * and `prefix`/`suffix` are ignored.
+   */
+  forms?: Record<string, string>;
+}
+
+export interface ToponymicByname {
+  kind: "toponymic";
+  particle: string;
+  places: string[];
+}
+
+export interface DescriptiveByname {
+  kind: "descriptive";
+  particle: string;
+  epithets: string[];
+}
+
+export type BynameRule = PatronymicByname | ToponymicByname | DescriptiveByname;
+
+export type RealisticBynames = Partial<
+  Record<RealisticPeriod, Record<string, BynameRule[]>>
+>;
