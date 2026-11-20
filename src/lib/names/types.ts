@@ -25,7 +25,22 @@ export type RealisticPeriod =
   | "japan_21st_century"
   | "china_21st_century";
 
-export type RealisticDataset = Record<RealisticPeriod, Record<Gender, string[]>>;
+/**
+ * A given name together with the culture it was drawn from, so a surname can
+ * be picked from the same culture instead of from the whole region.
+ *
+ * `culture` is an ISO 3166-1 alpha-2 country code for imported data and a
+ * slug ("england", "france") for the hand-written historical periods. It is
+ * optional: some names genuinely have no single culture (pan-Hispanic given
+ * names, the unverified `neutral` pools), and those fall back to the
+ * region-wide surname pool.
+ */
+export interface CulturedName {
+  name: string;
+  culture?: string;
+}
+
+export type RealisticDataset = Record<RealisticPeriod, Record<Gender, CulturedName[]>>;
 
 export type RealisticRegion =
   | "western_europe"
