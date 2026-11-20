@@ -111,11 +111,10 @@ export const realisticDataset: RealisticDataset = {
         "Bébinn",
       ]),
     ],
-    // Same placeholder problem as the other pre-modern cells: these name
-    // stocks were strongly gendered and had no epicene pool. Kept only so the
-    // option is not empty; the PRD calls for disabling it on pre-19th-century
-    // periods outright.
-    neutral: untagged(["Sigrun", "Alfwyn", "Ethelwyn", "Mael"]),
+    // Pre-modern European name stocks were strongly gendered and had no
+    // epicene pool, so this is empty rather than invented. The UI hides the
+    // Neutral option wherever no period offers it.
+    neutral: [],
   },
 
   // Early medieval eastern Europe: the pre-Christian and early Christian
@@ -163,8 +162,7 @@ export const realisticDataset: RealisticDataset = {
         "Vida", "Mirjana",
       ]),
     ],
-    // Same placeholder problem as the other pre-modern cells.
-    neutral: untagged(["Slavomir", "Bogdana", "Miroslava", "Zorislav"]),
+    neutral: [],
   },
 
   // Late medieval western Europe. The Christian name stock of this period was
@@ -222,11 +220,7 @@ export const realisticDataset: RealisticDataset = {
         "Juana", "María", "Constanza", "Leonor", "Teresa", "Mencía",
       ]),
     ],
-    // Inherited from the earlier dataset and NOT verified: medieval European
-    // given names were strongly gendered and there is no real epicene pool
-    // for this period. The PRD calls for disabling the neutral option on
-    // pre-19th-century periods; until that lands, these stay as a placeholder.
-    neutral: untagged(["Robin", "Jocelyn", "Avery", "Evelyn"]),
+    neutral: [],
   },
 
   // Historical slugs again. No period surname pool exists for eastern Europe
@@ -270,7 +264,7 @@ export const realisticDataset: RealisticDataset = {
         "Erzsebet", "Margit", "Ilona", "Katalin", "Borbala", "Zsofia",
       ]),
     ],
-    neutral: untagged(["Bogdana", "Dragomir", "Miloslav", "Zorislava"]),
+    neutral: [],
   },
 
   // 20th-century periods are hand-picked but tagged with ISO country codes,

@@ -97,7 +97,13 @@ export default function Home() {
                     <option
                       key={option.value}
                       value={option.value}
-                      disabled={!hasRealisticPeriod(option.value || undefined, century || undefined)}
+                      disabled={
+                        !hasRealisticPeriod(
+                          option.value || undefined,
+                          century || undefined,
+                          gender
+                        )
+                      }
                     >
                       {option.label}
                     </option>
@@ -118,7 +124,13 @@ export default function Home() {
                     <option
                       key={option.value}
                       value={option.value}
-                      disabled={!hasRealisticPeriod(region || undefined, option.value || undefined)}
+                      disabled={
+                        !hasRealisticPeriod(
+                          region || undefined,
+                          option.value || undefined,
+                          gender
+                        )
+                      }
                     >
                       {option.label}
                     </option>
@@ -136,7 +148,20 @@ export default function Home() {
               onChange={(event) => setGender(event.target.value as Gender)}
             >
               {GENDERS.map((option) => (
-                <option key={option.value} value={option.value}>
+                <option
+                  key={option.value}
+                  value={option.value}
+                  // Only the realistic setting has periods that lack a gender:
+                  // the pre-modern ones carry no neutral names.
+                  disabled={
+                    setting === "realistic" &&
+                    !hasRealisticPeriod(
+                      region || undefined,
+                      century || undefined,
+                      option.value
+                    )
+                  }
+                >
                   {option.label}
                 </option>
               ))}

@@ -48,7 +48,7 @@ const EXPECTED_PERIODS = [
 ].sort();
 
 describe("realisticDataset", () => {
-  it("covers all 16 sub-periods/regions with names for every gender", () => {
+  it("covers all 16 sub-periods/regions with gendered names", () => {
     const periods = Object.keys(realisticDataset).sort();
     expect(periods).toEqual(EXPECTED_PERIODS);
 
@@ -56,7 +56,18 @@ describe("realisticDataset", () => {
       const pool = realisticDataset[period as keyof typeof realisticDataset];
       expect(pool.male.length).toBeGreaterThan(0);
       expect(pool.female.length).toBeGreaterThan(0);
-      expect(pool.neutral.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("offers neutral names only where they are not invented", () => {
+    // Modern periods have a hand-picked neutral pool. Pre-modern European
+    // name stocks had no epicene pool, so theirs stay empty on purpose.
+    for (const period of Object.keys(realisticDataset) as RealisticPeriod[]) {
+      const isModern = realisticPeriodMeta[period].era === "modern";
+      expect(
+        realisticDataset[period].neutral.length > 0,
+        `${period} neutral pool`
+      ).toBe(isModern);
     }
   });
 });
@@ -638,5 +649,64 @@ describe("pool sizes", () => {
         }
       }
     }
+  });
+});
+
+describe("neutral gender on pre-modern periods", () => {
+  it("reports that pre-modern centuries have no neutral names", () => {
+    expect(hasRealisticPeriod(undefined, "600_1100", "male")).toBe(true);
+    expect(hasRealisticPeriod(undefined, "600_1100", "female")).toBe(true);
+    expect(hasRealisticPeriod(undefined, "600_1100", "neutral")).toBe(false);
+
+    expect(hasRealisticPeriod(undefined, "1300_1550", "neutral")).toBe(false);
+    expect(hasRealisticPeriod(undefined, "21st_century", "neutral")).toBe(true);
+    expect(hasRealisticPeriod("western_europe", "600_1100", "neutral")).toBe(false);
+  });
+
+  it("stays backwards compatible when no gender is passed", () => {
+    expect(hasRealisticPeriod(undefined, "600_1100")).toBe(true);
+    expect(hasRealisticPeriod("japan", "600_1100")).toBe(false);
+  });
+
+  it("never draws a neutral name from a period that has none", () => {
+    const modernNeutral = new Set(
+      (Object.keys(realisticDataset) as RealisticPeriod[])
+        .filter((period) => realisticPeriodMeta[period].era === "modern")
+        .flatMap((period) => namesIn(realisticDataset[period].neutral))
+    );
+
+    const names = generateNames({
+      setting: "realistic",
+      gender: "neutral",
+      count: 10,
+    });
+
+    expect(names).toHaveLength(10);
+    for (const name of names) {
+      expect(modernNeutral).toContain(firstNameOf(name));
+    }
+  });
+
+  it("falls back to modern periods instead of throwing on an impossible combination", () => {
+    // The UI disables this, but the API still has to survive it.
+    expect(() =>
+      generateNames({
+        setting: "realistic",
+        gender: "neutral",
+        count: 5,
+        region: "western_europe",
+        century: "600_1100",
+      })
+    ).not.toThrow();
+
+    const names = generateNames({
+      setting: "realistic",
+      gender: "neutral",
+      count: 5,
+      region: "western_europe",
+      century: "600_1100",
+    });
+
+    expect(names).toHaveLength(5);
   });
 });
