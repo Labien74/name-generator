@@ -1,6 +1,6 @@
 export type Gender = "male" | "female" | "neutral";
 
-export type Setting = "fantasy" | "scifi" | "realistic";
+export type Setting = "fantasy" | "realistic";
 
 export interface SyllablePool {
   prefixes: string[];

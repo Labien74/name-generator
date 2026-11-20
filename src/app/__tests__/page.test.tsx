@@ -13,6 +13,15 @@ describe("Home (name generator screen)", () => {
     expect(screen.queryByRole("list")).not.toBeInTheDocument();
   });
 
+  it("offers exactly two settings: Fantasy and Realistic", () => {
+    render(<Home />);
+
+    const settingSelect = screen.getByLabelText("Setting") as HTMLSelectElement;
+    const options = Array.from(settingSelect.options).map((option) => option.value);
+
+    expect(options).toEqual(["fantasy", "realistic"]);
+  });
+
   it("generates exactly the requested count of names and switches the button to 'More'", () => {
     render(<Home />);
 
@@ -30,7 +39,7 @@ describe("Home (name generator screen)", () => {
     render(<Home />);
 
     const settingSelect = screen.getByLabelText("Setting") as HTMLSelectElement;
-    fireEvent.change(settingSelect, { target: { value: "scifi" } });
+    fireEvent.change(settingSelect, { target: { value: "realistic" } });
 
     fireEvent.click(screen.getByRole("button", { name: "Generate" }));
     const firstBatch = within(screen.getByRole("list"))
@@ -42,7 +51,7 @@ describe("Home (name generator screen)", () => {
       .getAllByRole("listitem")
       .map((item) => item.textContent);
 
-    expect(settingSelect.value).toBe("scifi");
+    expect(settingSelect.value).toBe("realistic");
     expect(secondBatch).not.toEqual(firstBatch);
   });
 
@@ -57,8 +66,7 @@ describe("Home (name generator screen)", () => {
       .getAllByRole("listitem")
       .map((item) => item.textContent);
 
-    // Female fantasy prefixes never overlap with male ones (see generateNames.scifi.test.ts
-    // for the same assumption applied to prefixes across settings).
+    // Female fantasy prefixes never overlap with male ones.
     const maleOnlyPrefixes = ["Ar", "Bal", "Cor", "Dor", "Ivor"];
     for (const name of names) {
       expect(maleOnlyPrefixes.some((prefix) => name?.startsWith(prefix))).toBe(false);
@@ -112,16 +120,12 @@ describe("Home (name generator screen)", () => {
     }
   });
 
-  it("shows title/nickname checkboxes for Fantasy and Realistic, but not Sci-Fi", () => {
+  it("shows title/nickname checkboxes for both remaining settings", () => {
     render(<Home />);
 
     // Fantasy is the default setting.
     expect(screen.getByText("Include title")).toBeInTheDocument();
     expect(screen.getByText("Include nickname")).toBeInTheDocument();
-
-    fireEvent.change(screen.getByLabelText("Setting"), { target: { value: "scifi" } });
-    expect(screen.queryByText("Include title")).not.toBeInTheDocument();
-    expect(screen.queryByText("Include nickname")).not.toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("Setting"), { target: { value: "realistic" } });
     expect(screen.getByText("Include title")).toBeInTheDocument();
