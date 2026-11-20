@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import Home from "../page";
+import { realisticDataset } from "@/lib/names/datasets/realistic";
 
 describe("Home (name generator screen)", () => {
   it("renders all controls with no results yet", () => {
@@ -103,16 +104,12 @@ describe("Home (name generator screen)", () => {
       .getAllByRole("listitem")
       .map((item) => item.textContent);
 
-    const usaMaleNames = [
-      "Walter",
-      "Harold",
-      "Frank",
-      "Raymond",
-      "Eugene",
-      "Arthur",
-      "Clarence",
-      "Elmer",
-    ];
+    // Taken from the dataset rather than copied: an inline literal here went
+    // stale the moment the pool grew.
+    const usaMaleNames = realisticDataset.usa_20th_century.male.map(
+      (entry) => entry.name
+    );
+
     for (const name of names) {
       const firstName = name?.split(" ")[0];
       expect(usaMaleNames).toContain(firstName);
