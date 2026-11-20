@@ -2,7 +2,6 @@ import { fantasyDataset } from "./datasets/fantasy";
 import { fantasyRealNames } from "./datasets/fantasyRealNames";
 import { fantasySurnames } from "./datasets/fantasySurnames";
 import { fantasyTitles, fantasyEpithets } from "./datasets/fantasyTitlesAndEpithets";
-import { scifiDataset } from "./datasets/scifi";
 import { realisticDataset, realisticPeriodMeta } from "./datasets/realistic";
 import { realisticSurnames } from "./datasets/realisticSurnames";
 import { realisticTitles, realisticEpithets } from "./datasets/realisticTitlesAndEpithets";
@@ -14,11 +13,6 @@ import type {
   Setting,
   SyllableDataset,
 } from "./types";
-
-const syllableDatasets: Partial<Record<Setting, SyllableDataset>> = {
-  fantasy: fantasyDataset,
-  scifi: scifiDataset,
-};
 
 const allRealisticPeriods = Object.keys(realisticDataset) as RealisticPeriod[];
 
@@ -126,10 +120,7 @@ function buildName(
   if (setting === "realistic") {
     return buildRealisticName(gender, region, century, includeTitle, includeNickname);
   }
-  if (setting === "fantasy") {
-    return buildFantasyName(gender, includeTitle, includeNickname);
-  }
-  return buildSyllableName(syllableDatasets[setting]!, gender);
+  return buildFantasyName(gender, includeTitle, includeNickname);
 }
 
 export function generateNames({
