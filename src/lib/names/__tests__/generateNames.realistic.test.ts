@@ -289,7 +289,17 @@ describe("generateNames (realistic)", () => {
   });
 
   it("omits title and nickname by default", () => {
-    const names = generateNames({ setting: "realistic", gender: "male", count: 10 });
+    // Pinned to a surname-era period. A descriptive byname is built from the
+    // same vocabulary as the nicknames - Bold, Wise, Elder, Younger, Great
+    // and Fair appear in both lists - so "Eadric the Bold" in a pre-surname
+    // period legitimately ends in what looks like an appended epithet, and
+    // this assertion failed at random about one run in five.
+    const names = generateNames({
+      setting: "realistic",
+      gender: "male",
+      count: 10,
+      century: "21st_century",
+    });
 
     for (const name of names) {
       expect(allRealisticTitles.some((title: string) => name.startsWith(`${title} `))).toBe(false);
