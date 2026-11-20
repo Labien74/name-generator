@@ -11,8 +11,8 @@ function importedNames(region: string, genderKey: "F" | "M"): string[] {
 }
 
 export const realisticPeriodMeta: Record<RealisticPeriod, RealisticPeriodMeta> = {
-  western_europe_1200_1600: { region: "western_europe", century: "1200_1600" },
-  eastern_europe_1200_1600: { region: "eastern_europe", century: "1200_1600" },
+  western_europe_1300_1550: { region: "western_europe", century: "1300_1550" },
+  eastern_europe_1300_1550: { region: "eastern_europe", century: "1300_1550" },
   western_europe_20th_century: { region: "western_europe", century: "20th_century" },
   eastern_europe_20th_century: { region: "eastern_europe", century: "20th_century" },
   usa_20th_century: { region: "usa", century: "20th_century" },
@@ -28,12 +28,55 @@ export const realisticPeriodMeta: Record<RealisticPeriod, RealisticPeriodMeta> =
 };
 
 export const realisticDataset: RealisticDataset = {
-  western_europe_1200_1600: {
-    male: ["Guillaume", "Henri", "Baldwin", "Conrad", "Frederick", "Edmund", "Geoffrey", "Lucas"],
-    female: ["Isabeau", "Eleanor", "Beatrice", "Constance", "Mathilde", "Adelaide", "Blanche", "Catherine"],
+  // Late medieval western Europe. The Christian name stock of this period was
+  // small and heavily concentrated — in the English tax rolls of 1377-1381
+  // John alone accounts for roughly a third of men — so these lists are close
+  // to exhaustive rather than a sample. Hand-curated across England, France,
+  // the German lands, Italy and Iberia; see data-import/README.md.
+  western_europe_1300_1550: {
+    male: [
+      // England and Anglo-Norman
+      "John", "William", "Thomas", "Richard", "Robert", "Henry", "Roger",
+      "Walter", "Adam", "Nicholas", "Hugh", "Geoffrey", "Simon", "Ralph",
+      "Gilbert", "Stephen", "Edmund", "Humphrey", "Lawrence", "Bartholomew",
+      "Christopher", "Giles", "Miles", "Oliver",
+      // France
+      "Guillaume", "Jean", "Pierre", "Jacques", "Colin", "Gautier", "Thibault",
+      "Raoul", "Girard", "Étienne", "Guy", "Hugues", "Renaud", "Denis",
+      // German-speaking lands
+      "Hans", "Heinrich", "Konrad", "Dietrich", "Ulrich", "Albrecht",
+      "Friedrich", "Hermann", "Jakob", "Kaspar",
+      // Italy
+      "Giovanni", "Antonio", "Francesco", "Niccolò", "Lorenzo", "Matteo",
+      "Bartolomeo", "Domenico",
+      // Iberia
+      "Juan", "Pedro", "Alfonso", "Diego", "Rodrigo", "Fernando", "Gonzalo",
+      "Sancho",
+    ],
+    female: [
+      // England and Anglo-Norman
+      "Alice", "Agnes", "Joan", "Matilda", "Isabel", "Margaret", "Margery",
+      "Emma", "Cecily", "Juliana", "Elizabeth", "Katherine", "Eleanor",
+      "Beatrice", "Avice", "Maud", "Edith", "Anne", "Alison",
+      // France
+      "Jeanne", "Marguerite", "Isabeau", "Perrette", "Colette", "Jacquette",
+      "Marie", "Mahaut", "Blanche", "Agnès",
+      // German-speaking lands
+      "Anna", "Margarethe", "Elsbeth", "Barbara", "Ursula", "Gertrud",
+      "Kunigunde", "Adelheid",
+      // Italy
+      "Caterina", "Francesca", "Lucia", "Maddalena", "Antonia", "Lisabetta",
+      "Bartolomea",
+      // Iberia
+      "Juana", "María", "Constanza", "Leonor", "Teresa", "Mencía",
+    ],
+    // Inherited from the earlier dataset and NOT verified: medieval European
+    // given names were strongly gendered and there is no real epicene pool
+    // for this period. The PRD calls for disabling the neutral option on
+    // pre-19th-century periods; until that lands, these stay as a placeholder.
     neutral: ["Robin", "Jocelyn", "Avery", "Evelyn"],
   },
-  eastern_europe_1200_1600: {
+  eastern_europe_1300_1550: {
     male: ["Bogdan", "Miroslav", "Casimir", "Vladislav", "Jaromir", "Ladislaus", "Stanislav", "Ottokar"],
     female: ["Zofia", "Jadwiga", "Milica", "Anastasia", "Wanda", "Dobrava", "Kunigunde", "Ludmila"],
     neutral: ["Bogdana", "Dragomir", "Miloslav", "Zorislava"],

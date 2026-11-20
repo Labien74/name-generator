@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { generateNames, hasRealisticPeriod } from "../generateNames";
 import { realisticDataset, realisticPeriodMeta } from "../datasets/realistic";
 import { realisticSurnames } from "../datasets/realisticSurnames";
+import { realisticPeriodSurnames } from "../datasets/realisticPeriodSurnames";
 import { realisticTitles, realisticEpithets } from "../datasets/realisticTitlesAndEpithets";
 
 // Surnames can themselves contain spaces (e.g. "De Los Santos"), so split
@@ -17,8 +18,8 @@ function surnameOf(fullName: string): string {
 }
 
 const EXPECTED_PERIODS = [
-  "western_europe_1200_1600",
-  "eastern_europe_1200_1600",
+  "western_europe_1300_1550",
+  "eastern_europe_1300_1550",
   "western_europe_20th_century",
   "eastern_europe_20th_century",
   "usa_20th_century",
@@ -162,7 +163,7 @@ describe("generateNames (realistic)", () => {
         gender: "male",
         count: 5,
         region: "usa",
-        century: "1200_1600",
+        century: "1300_1550",
       })
     ).not.toThrow();
 
@@ -171,7 +172,7 @@ describe("generateNames (realistic)", () => {
       gender: "male",
       count: 5,
       region: "usa",
-      century: "1200_1600",
+      century: "1300_1550",
     });
     expect(names).toHaveLength(5);
   });
@@ -297,11 +298,60 @@ describe("generateNames (realistic)", () => {
   it("reports which region+century combinations have data", () => {
     expect(hasRealisticPeriod(undefined, undefined)).toBe(true);
     expect(hasRealisticPeriod("japan", undefined)).toBe(true);
-    expect(hasRealisticPeriod(undefined, "1200_1600")).toBe(true);
-    expect(hasRealisticPeriod("western_europe", "1200_1600")).toBe(true);
+    expect(hasRealisticPeriod(undefined, "1300_1550")).toBe(true);
+    expect(hasRealisticPeriod("western_europe", "1300_1550")).toBe(true);
     expect(hasRealisticPeriod("japan", "21st_century")).toBe(true);
-    expect(hasRealisticPeriod("japan", "1200_1600")).toBe(false);
-    expect(hasRealisticPeriod("usa", "1200_1600")).toBe(false);
+    expect(hasRealisticPeriod("japan", "1300_1550")).toBe(false);
+    expect(hasRealisticPeriod("usa", "1300_1550")).toBe(false);
     expect(hasRealisticPeriod("india", "20th_century")).toBe(false);
+  });
+});
+
+describe("western_europe_1300_1550 (late medieval spike cell)", () => {
+  it("has a pool large enough to be representative, not a token sample", () => {
+    const pool = realisticDataset.western_europe_1300_1550;
+
+    expect(pool.male.length).toBeGreaterThanOrEqual(40);
+    expect(pool.female.length).toBeGreaterThanOrEqual(35);
+  });
+
+  it("has no duplicate entries in either gender pool", () => {
+    const pool = realisticDataset.western_europe_1300_1550;
+
+    expect(new Set(pool.male).size).toBe(pool.male.length);
+    expect(new Set(pool.female).size).toBe(pool.female.length);
+  });
+
+  it("pairs given names with period surnames, not the modern regional pool", () => {
+    const periodSurnames = realisticPeriodSurnames.western_europe_1300_1550;
+    expect(periodSurnames).toBeDefined();
+
+    const names = generateNames({
+      setting: "realistic",
+      gender: "male",
+      count: 10,
+      region: "western_europe",
+      century: "1300_1550",
+    });
+
+    for (const name of names) {
+      expect(periodSurnames).toContain(surnameOf(name));
+    }
+  });
+
+  it("still falls back to the regional surname pool for periods without their own", () => {
+    expect(realisticPeriodSurnames.usa_20th_century).toBeUndefined();
+
+    const names = generateNames({
+      setting: "realistic",
+      gender: "male",
+      count: 10,
+      region: "usa",
+      century: "20th_century",
+    });
+
+    for (const name of names) {
+      expect(realisticSurnames.usa).toContain(surnameOf(name));
+    }
   });
 });

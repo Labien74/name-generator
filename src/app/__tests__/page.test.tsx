@@ -159,17 +159,17 @@ describe("Home (name generator screen)", () => {
       within(screen.getByLabelText(label)).getByRole("option", { name: text }) as HTMLOptionElement;
 
     // Nothing selected yet — every option is available.
-    expect(option("Century", "1200–1600").disabled).toBe(false);
+    expect(option("Century", "1300–1550").disabled).toBe(false);
     expect(option("Region", "Japan").disabled).toBe(false);
 
     fireEvent.change(screen.getByLabelText("Region"), { target: { value: "japan" } });
-    expect(option("Century", "1200–1600").disabled).toBe(true);
+    expect(option("Century", "1300–1550").disabled).toBe(true);
     expect(option("Century", "20th century").disabled).toBe(true);
     expect(option("Century", "21st century").disabled).toBe(false);
     expect(option("Century", "Any").disabled).toBe(false);
 
     fireEvent.change(screen.getByLabelText("Region"), { target: { value: "" } });
-    fireEvent.change(screen.getByLabelText("Century"), { target: { value: "1200_1600" } });
+    fireEvent.change(screen.getByLabelText("Century"), { target: { value: "1300_1550" } });
     expect(option("Region", "Japan").disabled).toBe(true);
     expect(option("Region", "USA").disabled).toBe(true);
     expect(option("Region", "Western Europe").disabled).toBe(false);
