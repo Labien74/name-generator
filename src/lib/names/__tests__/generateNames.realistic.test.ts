@@ -3,7 +3,13 @@ import { generateNames, hasRealisticPeriod } from "../generateNames";
 import { realisticDataset, realisticPeriodMeta } from "../datasets/realistic";
 import { realisticSurnames, realisticSurnamesByCulture } from "../datasets/realisticSurnames";
 import { realisticPeriodSurnames } from "../datasets/realisticPeriodSurnames";
-import { realisticTitles, realisticEpithets } from "../datasets/realisticTitlesAndEpithets";
+import { realisticBynames } from "../datasets/realisticBynames";
+import {
+  realisticTitlesByEra,
+  realisticEpithets,
+} from "../datasets/realisticTitlesAndEpithets";
+
+const allRealisticTitles = Object.values(realisticTitlesByEra).flat();
 import type { CulturedName, RealisticPeriod } from "../types";
 
 // Surnames can themselves contain spaces (e.g. "De Los Santos"), so split
@@ -23,6 +29,7 @@ function surnameOf(fullName: string): string {
 }
 
 const EXPECTED_PERIODS = [
+  "western_europe_600_1100",
   "western_europe_1300_1550",
   "eastern_europe_1300_1550",
   "western_europe_20th_century",
@@ -40,7 +47,7 @@ const EXPECTED_PERIODS = [
 ].sort();
 
 describe("realisticDataset", () => {
-  it("covers all 14 sub-periods/regions with names for every gender", () => {
+  it("covers all 15 sub-periods/regions with names for every gender", () => {
     const periods = Object.keys(realisticDataset).sort();
     expect(periods).toEqual(EXPECTED_PERIODS);
 
@@ -269,7 +276,7 @@ describe("generateNames (realistic)", () => {
     const names = generateNames({ setting: "realistic", gender: "male", count: 10 });
 
     for (const name of names) {
-      expect(realisticTitles.some((title) => name.startsWith(`${title} `))).toBe(false);
+      expect(allRealisticTitles.some((title: string) => name.startsWith(`${title} `))).toBe(false);
       expect(realisticEpithets.some((epithet) => name.endsWith(` ${epithet}`))).toBe(false);
     }
   });
@@ -283,15 +290,19 @@ describe("generateNames (realistic)", () => {
     });
 
     for (const name of names) {
-      expect(realisticTitles.some((title) => name.startsWith(`${title} `))).toBe(true);
+      expect(allRealisticTitles.some((title: string) => name.startsWith(`${title} `))).toBe(true);
     }
   });
 
   it("appends an epithet when includeNickname is true", () => {
+    // Pinned to a surname-era period: in the pre-surname periods a
+    // descriptive byname already is an epithet, and the engine deliberately
+    // does not stack a second one on top (see the 600-1100 suite).
     const names = generateNames({
       setting: "realistic",
       gender: "male",
       count: 10,
+      century: "21st_century",
       includeNickname: true,
     });
 
@@ -440,6 +451,159 @@ describe("culture tagging", () => {
       expect(names).toHaveLength(10);
       for (const name of names) {
         expect(realisticSurnames[region]).toContain(surnameOf(name));
+      }
+    }
+  });
+});
+
+describe("western_europe_600_1100 (pre-surname era)", () => {
+  const PERIOD = "western_europe_600_1100";
+
+  function cultureMap(gender: "male" | "female") {
+    return new Map(
+      realisticDataset[PERIOD][gender].map((entry) => [entry.name, entry.culture])
+    );
+  }
+
+  // Every byname the rules of a culture can possibly produce, expanded.
+  function possibleBynames(culture: string, gender: "male" | "female"): Set<string> {
+    const rules = realisticBynames[PERIOD]![culture];
+    const fathers = realisticDataset[PERIOD].male
+      .filter((entry) => entry.culture === culture)
+      .map((entry) => entry.name);
+
+    const out = new Set<string>();
+    for (const rule of rules) {
+      if (rule.kind === "toponymic") {
+        for (const place of rule.places) out.add(`${rule.particle} ${place}`);
+      } else if (rule.kind === "descriptive") {
+        for (const epithet of rule.epithets) out.add(`${rule.particle} ${epithet}`);
+      } else {
+        const { prefix, suffix } = gender === "female" ? rule.female : rule.male;
+        for (const father of fathers) {
+          out.add(`${prefix ? `${prefix} ` : ""}${father}${suffix ?? ""}`);
+        }
+      }
+    }
+    return out;
+  }
+
+  it("builds a byname instead of a surname", () => {
+    for (const gender of ["male", "female"] as const) {
+      const cultures = cultureMap(gender);
+
+      const names = generateNames({
+        setting: "realistic",
+        gender,
+        count: 10,
+        region: "western_europe",
+        century: "600_1100",
+      });
+
+      expect(names).toHaveLength(10);
+
+      for (const name of names) {
+        const culture = cultures.get(firstNameOf(name));
+        expect(culture).toBeDefined();
+        expect(possibleBynames(culture!, gender)).toContain(surnameOf(name));
+      }
+    }
+  });
+
+  it("never pairs an early medieval name with a modern surname", () => {
+    const names = generateNames({
+      setting: "realistic",
+      gender: "male",
+      count: 10,
+      region: "western_europe",
+      century: "600_1100",
+    });
+
+    for (const name of names) {
+      expect(realisticSurnames.western_europe).not.toContain(surnameOf(name));
+    }
+  });
+
+  it("builds patronymics from given names of the same culture", () => {
+    const norseFathers = realisticDataset[PERIOD].male
+      .filter((entry) => entry.culture === "norse")
+      .map((entry) => entry.name);
+
+    const patronymics = [...possibleBynames("norse", "male")].filter((byname) =>
+      byname.endsWith("sson")
+    );
+
+    expect(patronymics.length).toBe(norseFathers.length);
+    for (const father of norseFathers) {
+      expect(patronymics).toContain(`${father}sson`);
+    }
+  });
+
+  it("does not stack a nickname on top of a descriptive byname", () => {
+    for (let batch = 0; batch < 20; batch++) {
+      const names = generateNames({
+        setting: "realistic",
+        gender: "male",
+        count: 10,
+        region: "western_europe",
+        century: "600_1100",
+        includeNickname: true,
+      });
+
+      for (const name of names) {
+        // "Eadric the Red the Wise" would mean two epithets in one name.
+        const theCount = name.split(" the ").length - 1;
+        expect(theCount).toBeLessThanOrEqual(1);
+      }
+    }
+  });
+});
+
+describe("titles by era", () => {
+  it("gives every period an era", () => {
+    for (const period of Object.keys(realisticDataset) as RealisticPeriod[]) {
+      expect(realisticTitlesByEra[realisticPeriodMeta[period].era]).toBeDefined();
+    }
+  });
+
+  it("never puts a modern title on a pre-modern name", () => {
+    for (const century of ["600_1100", "1300_1550"] as const) {
+      const names = generateNames({
+        setting: "realistic",
+        gender: "male",
+        count: 10,
+        region: "western_europe",
+        century,
+        includeTitle: true,
+      });
+
+      for (const name of names) {
+        for (const modernTitle of realisticTitlesByEra.modern) {
+          expect(name.startsWith(`${modernTitle} `)).toBe(false);
+        }
+      }
+    }
+  });
+
+  it("uses the era-appropriate title list for each century", () => {
+    const expected = {
+      "600_1100": realisticTitlesByEra.early_medieval,
+      "1300_1550": realisticTitlesByEra.late_medieval,
+      "20th_century": realisticTitlesByEra.modern,
+    } as const;
+
+    for (const [century, titles] of Object.entries(expected)) {
+      const names = generateNames({
+        setting: "realistic",
+        gender: "male",
+        count: 10,
+        region: "western_europe",
+        century: century as keyof typeof expected,
+        includeTitle: true,
+      });
+
+      for (const name of names) {
+        expect(titles.some((title) => name.startsWith(`${title} `))).toBe(true);
       }
     }
   });

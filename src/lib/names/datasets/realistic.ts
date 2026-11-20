@@ -32,24 +32,91 @@ function untagged(names: string[]): CulturedName[] {
   return names.map((name) => ({ name }));
 }
 
+const EARLY = "early_medieval" as const;
+const LATE = "late_medieval" as const;
+const MODERN = "modern" as const;
+
 export const realisticPeriodMeta: Record<RealisticPeriod, RealisticPeriodMeta> = {
-  western_europe_1300_1550: { region: "western_europe", century: "1300_1550" },
-  eastern_europe_1300_1550: { region: "eastern_europe", century: "1300_1550" },
-  western_europe_20th_century: { region: "western_europe", century: "20th_century" },
-  eastern_europe_20th_century: { region: "eastern_europe", century: "20th_century" },
-  usa_20th_century: { region: "usa", century: "20th_century" },
-  latin_america_20th_century: { region: "latin_america", century: "20th_century" },
-  western_europe_21st_century: { region: "western_europe", century: "21st_century" },
-  eastern_europe_21st_century: { region: "eastern_europe", century: "21st_century" },
-  usa_21st_century: { region: "usa", century: "21st_century" },
-  latin_america_21st_century: { region: "latin_america", century: "21st_century" },
-  central_asia_21st_century: { region: "central_asia", century: "21st_century" },
-  india_21st_century: { region: "india", century: "21st_century" },
-  japan_21st_century: { region: "japan", century: "21st_century" },
-  china_21st_century: { region: "china", century: "21st_century" },
+  western_europe_600_1100: { region: "western_europe", century: "600_1100", era: EARLY },
+  western_europe_1300_1550: { region: "western_europe", century: "1300_1550", era: LATE },
+  eastern_europe_1300_1550: { region: "eastern_europe", century: "1300_1550", era: LATE },
+  western_europe_20th_century: { region: "western_europe", century: "20th_century", era: MODERN },
+  eastern_europe_20th_century: { region: "eastern_europe", century: "20th_century", era: MODERN },
+  usa_20th_century: { region: "usa", century: "20th_century", era: MODERN },
+  latin_america_20th_century: { region: "latin_america", century: "20th_century", era: MODERN },
+  western_europe_21st_century: { region: "western_europe", century: "21st_century", era: MODERN },
+  eastern_europe_21st_century: { region: "eastern_europe", century: "21st_century", era: MODERN },
+  usa_21st_century: { region: "usa", century: "21st_century", era: MODERN },
+  latin_america_21st_century: { region: "latin_america", century: "21st_century", era: MODERN },
+  central_asia_21st_century: { region: "central_asia", century: "21st_century", era: MODERN },
+  india_21st_century: { region: "india", century: "21st_century", era: MODERN },
+  japan_21st_century: { region: "japan", century: "21st_century", era: MODERN },
+  china_21st_century: { region: "china", century: "21st_century", era: MODERN },
 };
 
 export const realisticDataset: RealisticDataset = {
+  // Early medieval western Europe: the Germanic, Norse and Gaelic name stock
+  // that the Christian saint names of 1300-1550 later displaced. Nobody here
+  // has a surname — see realisticBynames.ts for what goes in its place.
+  //
+  // The cultures are deliberately kept apart because they share almost
+  // nothing: Æthelred, Harald, Chlodovech and Diarmait belong to four
+  // different naming worlds that happened to sit next to each other.
+  western_europe_600_1100: {
+    male: [
+      ...tag("anglo_saxon", [
+        "Æthelred", "Eadric", "Wulfstan", "Leofric", "Godwine", "Ælfric",
+        "Beorhtric", "Cuthbert", "Dunstan", "Eadmund", "Oswald", "Osric",
+        "Sigeric", "Wulfric", "Beornwulf", "Ceolwulf", "Eadwig", "Ælfheah",
+        "Æthelstan", "Byrhtnoth", "Hereward", "Wiglaf", "Swithun", "Eadgar",
+      ]),
+      ...tag("norse", [
+        "Eirik", "Harald", "Bjorn", "Sigurd", "Olaf", "Ragnar", "Thorvald",
+        "Gunnar", "Ivar", "Halfdan", "Leif", "Ketil", "Sten", "Ulf", "Rolf",
+        "Arnbjorn", "Thorstein", "Egil", "Grim", "Hakon", "Sigvaldi", "Ottar",
+      ]),
+      ...tag("frankish", [
+        "Chlodovech", "Charles", "Pepin", "Bernard", "Gerard", "Hildebrand",
+        "Lothar", "Theuderic", "Sigibert", "Childeric", "Arnulf", "Ansgar",
+        "Berengar", "Dagobert", "Gislebert", "Guntram", "Odo", "Ratbod",
+        "Wichard", "Fulk",
+      ]),
+      ...tag("gaelic", [
+        "Áed", "Niall", "Diarmait", "Conchobar", "Domnall", "Cormac",
+        "Muirchertach", "Flann", "Ruaidrí", "Brian", "Cathal", "Fergal",
+        "Lorcán", "Tadg", "Eógan", "Donnchad", "Sitriuc", "Óengus",
+      ]),
+    ],
+    female: [
+      ...tag("anglo_saxon", [
+        "Æthelflæd", "Eadgifu", "Ælfgifu", "Wulfrun", "Godgifu", "Cwenburh",
+        "Eadburh", "Hildeburh", "Leofgifu", "Mildthryth", "Osgifu", "Sæthryth",
+        "Wulfgifu", "Æthelthryth", "Beorhtgifu", "Eanflæd", "Hereswith",
+        "Seaxburh",
+      ]),
+      ...tag("norse", [
+        "Astrid", "Gudrun", "Sigrid", "Thora", "Helga", "Ingrid", "Ragnhild",
+        "Asa", "Freydis", "Hallgerd", "Jorunn", "Solveig", "Thyra", "Unn",
+        "Yrsa", "Bergljot",
+      ]),
+      ...tag("frankish", [
+        "Bertrada", "Hildegard", "Gisela", "Rotrude", "Ermengard", "Judith",
+        "Adelheid", "Clotilde", "Fredegund", "Brunhild", "Richildis",
+        "Theodrada", "Waldrada", "Emma", "Bertha",
+      ]),
+      ...tag("gaelic", [
+        "Gormlaith", "Dervorgilla", "Mór", "Sadb", "Órlaith", "Lassar",
+        "Muirenn", "Ailbe", "Cacht", "Findabair", "Étaín", "Eithne", "Rónnat",
+        "Bébinn",
+      ]),
+    ],
+    // Same placeholder problem as the other pre-modern cells: these name
+    // stocks were strongly gendered and had no epicene pool. Kept only so the
+    // option is not empty; the PRD calls for disabling it on pre-19th-century
+    // periods outright.
+    neutral: untagged(["Sigrun", "Alfwyn", "Ethelwyn", "Mael"]),
+  },
+
   // Late medieval western Europe. The Christian name stock of this period was
   // small and heavily concentrated — in the English tax rolls of 1377-1381
   // John alone accounts for roughly a third of men — so these lists are close

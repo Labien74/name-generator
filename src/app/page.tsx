@@ -29,6 +29,7 @@ const REGIONS: { value: RealisticRegion | ""; label: string }[] = [
 
 const CENTURIES: { value: RealisticCentury | ""; label: string }[] = [
   { value: "", label: "Any" },
+  { value: "600_1100", label: "600–1100" },
   { value: "1300_1550", label: "1300–1550" },
   { value: "20th_century", label: "20th century" },
   { value: "21st_century", label: "21st century" },
